@@ -3,10 +3,10 @@ extern void shift(char *state, int count);
 
 void eval(char* state)
 {
-	char test[10] = {0,0xf0,0,0,0,0,0,0,0,0xff};
+	char test[12] = {0,0xf0,0,0,0,0,0,0,0,0xff,0,0};
 	for(int i = 0; i<50; i++)
 	{
-		bputs(&test, 10);
-		shift(&test, 10);
+		bputs(&test, 12);
+		shift(&test, 12);
 	}
 }
