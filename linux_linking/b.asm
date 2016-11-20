@@ -19,17 +19,20 @@ shift: ; (char* state)
 	mov ebp, esp
 	mov esi, [ebp+8]
 	push esi, edi, ax, bx, dx
+	xor ax, ax
+	xor bx, bx
+	xor dx, dx
 	mov edi, tmp
 	pushad
-		mov cx, 5
+		mov cx, 10
 		mov dx, 0
-		add esi, 8
-		add edi, 8
+		add esi, 9
+		add edi, 9
 		; dx - previous CF
 		xor dx, dx
 		std
 		in4:
-			lodsw
+			lodsb
 			
 			mov bx, ax
 
@@ -38,23 +41,23 @@ shift: ; (char* state)
 			; bx <- first bit of ax
 			and bx, 1
 
-			shl dx, 15 ; carry flag from %111 stays in stack
+			shl dx, 7 ; carry flag from %111 stays in stack
 			or ax, dx
 			
 			mov dx, bx
 			
-			stosw
+			stosb
 		loop in4
 		cld
 
 		mov esi, tmp
 		mov edi, tmp
-		add esi, 8
-		add edi, 8
-		lodsw
-			shl dx, 15 ; carry flag from %111 stays in stack
+		add esi, 9
+		add edi, 9
+		lodsb
+			shl dx, 7 ; carry flag from %111 stays in stack
 			or ax, dx
-		stosw
+		stosb
 	popad
 	xchg esi, edi
 	call strcpy

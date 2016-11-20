@@ -1,12 +1,12 @@
 extern void bputs(char *state, int count);
-extern void shift(char *state);
+extern void shift(char *state, int count);
 
 void eval(char* state)
 {
-	char test[10] = {0xf0,0,0,0,0,0,0,0,0,0xff};
-	for(int i = 0; i<20; i++)
+	char test[10] = {0,0xf0,0,0,0,0,0,0,0,0xff};
+	for(int i = 0; i<50; i++)
 	{
 		bputs(&test, 10);
-		shift(&test);
+		shift(&test, 10);
 	}
 }
