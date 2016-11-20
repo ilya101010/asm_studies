@@ -1,4 +1,5 @@
 ENTRY(_start)
+OUTPUT("final")
 SECTIONS
 {
        . = 0x10000;
