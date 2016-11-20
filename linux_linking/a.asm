@@ -1,5 +1,7 @@
 format ELF
 public _start
+public bputs
+extrn eval
 
 macro push [arg] { push arg }
 macro pop [arg] { pop arg }
@@ -21,7 +23,9 @@ section '.text' executable
 
 _start:
 	push state
-	call k_puts
+	call eval
+	;call bputs
+	
 	mov eax,1		; System call 'exit'
 	xor ebx,ebx		; Exitcode: 0 ('xor ebx,ebx' saves time; 'mov ebx, 0' would be slower)
 	int 0x80
@@ -56,14 +60,14 @@ put_space:
 	popa
 	ret
 
-k_puts: ; important: we _are_ outputing bits from the smallest => biggest
+bputs: ; important: we _are_ outputing bits from the smallest => biggest
 	push ebp
 	mov ebp, esp
 	pusha
 	mov esi, [ebp+8]
 	; >>> formating stare_str
-	mov cx, 10
-	mov esi, state
+	mov cx, [ebp+12]
+	mov esi, [ebp+8]
 	mov edi, state_str
 	in1: ; 10 bytes
 		mov dl, 1; mask
@@ -85,11 +89,16 @@ k_puts: ; important: we _are_ outputing bits from the smallest => biggest
 			shl dl, 1
 		jnc in2 ; carry != 1 => NOT overflow in dl => NOT finish (8 bits in dl)
 	loop in1
+	; >>> adding /n
+	mov al, 0xA
+	stosb
 	; >>> actual write
 	mov eax,4			; System call 'write'
 	mov ebx,1			; 'stdout'
 	mov ecx,state_str	; Address of message
-	mov edx,80			; Length  of message
+	mov edx, [ebp+12]
+	shl edx, 3
+	inc edx
 	int 0x80			; All system calls are done via this interrupt
 	popa
 	pop ebp
@@ -99,4 +108,4 @@ section  '.bss' writable
 
 symb db 48 
 state   dw 0, 0x0,0x1,0,0x0000 ; 2 hex symbols => 8 binary states
-state_str db 80 dup(48) 
+state_str db 1025 dup(48) 
