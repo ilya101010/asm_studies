@@ -1,3 +1,4 @@
+format ELF
 Use16
 org     0x7C00
 

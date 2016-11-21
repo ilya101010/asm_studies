@@ -102,6 +102,8 @@ shift_string: ; works! RIGHT direction! include si
 			stosw
 		loop in4
 		cld
+		add si, 2
+		add di, 2
 
 		mov si, tmp
 		mov di, tmp

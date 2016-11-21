@@ -1,7 +1,7 @@
 format ELF
 public _start
 public bputs
-extrn eval
+extrn _main
 
 macro push [arg] { push arg }
 macro pop [arg] { pop arg }
@@ -22,8 +22,7 @@ section '.text' executable
 ; extrn k_main
 
 _start:
-	push state
-	call eval
+	call _main
 	;call bputs
 	
 	mov eax,1		; System call 'exit'
@@ -76,7 +75,7 @@ bputs: ; important: we _are_ outputing bits from the smallest => biggest
 			test al, dl
 			jnz hash
 			push eax
-				mov al, ' '
+				mov al, '.'
 				stosb
 			pop eax
 			jmp pend
@@ -106,6 +105,5 @@ bputs: ; important: we _are_ outputing bits from the smallest => biggest
 
 section  '.bss' writable
 
-symb db 48 
-state   dw 0, 0x0,0x1,0,0x0000 ; 2 hex symbols => 8 binary states
+symb db 48
 state_str db 1025 dup(48) 
