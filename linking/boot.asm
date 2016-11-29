@@ -1,9 +1,16 @@
-Use16
+format ELF
+
 org     0x7C00
 
 macro push [arg] { push arg }
 macro pop [arg] { pop arg }
+; >>>> 16bit code
 
+section '.text16' executable
+Use16
+
+
+public start
 start:
 	cli		     ; disabling interrupts
 	mov     ax, cs	  ; segment registers' init
@@ -16,12 +23,22 @@ start:
 	mov ebx,eax     ;копируем в регистр EBX
 	; why?!
 
-	call clrscr
+	push dx, bx, ax, cx
+	mov dx, 0 ; set cursor to top left-most corner of screen
+	mov bh, 0 ; page
+	mov ah, 0x2 ; ah = 2 => set cursor
+	int 0x10 ; moving cursor
+	mov cx, 2000 ; print 2000 = 80*45 chars
+	mov bh, 0
+	mov ah, 0x9
+	int 0x10
+	pop cx, ax, bx, dx
+	ret
 
 	; Вычислить и записать в дескриптор адрес 32-битного кода 
 	mov eax,ebx     ;восстанавливаем линейный адрес
 	add eax,entry_pm    ;теперь в EAX линейный адрес сегмента кода
-	mov di,d_code32+2   ;пишем базу в дескриптор
+	mov edi,d_code32+2   ;пишем базу в дескриптор
 	stosw           ;биты 0..15
 	shr eax,16
 	stosb           ;биты 16..23
@@ -53,45 +70,14 @@ start:
 	dd  0 ; offset
 	dw  sel_code32 ; selector
 
-clrscr:
-	push dx, bx, ax, cx
-	mov dx, 0 ; set cursor to top left-most corner of screen
-	mov bh, 0 ; page
-	mov ah, 0x2 ; ah = 2 => set cursor
-	int 0x10 ; moving cursor
-	mov cx, 2000 ; print 2000 = 80*45 chars
-	mov bh, 0
-	mov ah, 0x9
-	int 0x10
-	pop cx, ax, bx, dx
-	ret
+; >>>> 32bit code
 
-
+section '.text32' executable align 100h
 use32               ;32-битный код!!!
 
 align   10h         ;код должен выравниваться по границе 16 байт
 entry_pm:
 	jmp k_main
-
-; селекторы дескрипторов (RPL=0, TI=0)
-sel_zero    =   0000000b
-sel_code32  =   0001000b
-sel_video  	=   0010000b
-	
-align   10h         ;выравнивание таблицы по границе 16 байт
-
-GDTTable:   ;таблица GDT
-; нулевой дескриптор
-d_zero:		db  0,0,0,0,0,0,0,0     
-; сегмент 32-битного кода (4 гигабайт)
-d_code32:	db  0ffh,0ffh,0,0,0,10011010b,11001111b,0
-d_video:	db	0ffh, 07fh, 0x00, 80h, 0bh, 10010010b, 01000000b, 0x00
-
-GDTSize     =   $-GDTTable
-
-GDTR:               ;загружаемое значение регистра GDTR
-g_size:     dw  GDTSize-1   ;размер таблицы GDT
-g_base:     dd  GDTTable           ;адрес таблицы GDT
 
 k_main:
 	pm_entry:
@@ -112,9 +98,35 @@ k_main:
 		msg:
 		db  'Booting to C file...', 0
 
+
+
+; >>>> GDT
+
+; селекторы дескрипторов (RPL=0, TI=0)
+sel_zero    =   0000000b
+sel_code32  =   0001000b
+sel_video  	=   0010000b
+
+align   10h         ;выравнивание таблицы по границе 16 байт
+
+GDTTable:   ;таблица GDT
+; zero seg
+d_zero:		db  0,0,0,0,0,0,0,0     
+; 32 bit code seg
+d_code32:	db  0ffh,0ffh,0,0,0,10011010b,11001111b,0
+; video
+d_video:	db	0ffh, 07fh, 0x00, 80h, 0bh, 10010010b, 01000000b, 0x00
+
+GDTSize     =   $-GDTTable
+
+GDTR:               ;загружаемое значение регистра GDTR
+g_size:     dw  GDTSize-1   ;размер таблицы GDT
+g_base:     dd  GDTTable           ;адрес таблицы GDT
+
+
 	; Here goes C flat binary?
 
 ; >>> boot sector signature
-finish:
-times 0x1FE-finish+start db 0
-db	 0x55, 0xAA ; ñèãíàòóðà çàãðóçî÷íîãî ñåêòîðà
+;finish:
+;times 0x1FE-finish+start db 0
+;db	 0x55, 0xAA ; ñèãíàòóðà çàãðóçî÷íîãî ñåêòîðà
