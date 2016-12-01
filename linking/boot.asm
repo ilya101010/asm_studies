@@ -33,7 +33,6 @@ start:
 	mov ah, 0x9
 	int 0x10
 	pop cx, ax, bx, dx
-	ret
 
 	; Вычислить и записать в дескриптор адрес 32-битного кода 
 	mov eax,ebx     ;восстанавливаем линейный адрес
@@ -70,11 +69,27 @@ start:
 	dd  0 ; offset
 	dw  sel_code32 ; selector
 
+GDTTable:   ;таблица GDT
+; zero seg
+d_zero:		db  0,0,0,0,0,0,0,0     
+; 32 bit code seg
+d_code32:	db  0ffh,0ffh,0,0,0,10011010b,11001111b,0
+; video
+d_video:	db	0ffh, 07fh, 0x00, 80h, 0bh, 10010010b, 01000000b, 0x00
+
+GDTSize     =   $-GDTTable
+
+GDTR:               ;загружаемое значение регистра GDTR
+g_size:     dw  GDTSize-1   ;размер таблицы GDT
+g_base:     dd  GDTTable           ;адрес таблицы GDT
+
 ; >>>> 32bit code
 
-section '.text32' executable align 100h
+section '.text32' executable align 10h
 use32               ;32-битный код!!!
 
+
+public entry_pm
 align   10h         ;код должен выравниваться по границе 16 байт
 entry_pm:
 	jmp k_main
@@ -108,21 +123,6 @@ sel_code32  =   0001000b
 sel_video  	=   0010000b
 
 align   10h         ;выравнивание таблицы по границе 16 байт
-
-GDTTable:   ;таблица GDT
-; zero seg
-d_zero:		db  0,0,0,0,0,0,0,0     
-; 32 bit code seg
-d_code32:	db  0ffh,0ffh,0,0,0,10011010b,11001111b,0
-; video
-d_video:	db	0ffh, 07fh, 0x00, 80h, 0bh, 10010010b, 01000000b, 0x00
-
-GDTSize     =   $-GDTTable
-
-GDTR:               ;загружаемое значение регистра GDTR
-g_size:     dw  GDTSize-1   ;размер таблицы GDT
-g_base:     dd  GDTTable           ;адрес таблицы GDT
-
 
 	; Here goes C flat binary?
 
