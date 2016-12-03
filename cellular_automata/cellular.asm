@@ -19,6 +19,7 @@ start:
 	mov cx, 24
 	call    clrscr
 	lp0:
+		xchg bx, bx
 		mov si, state
 		call k_puts
 		call eval

@@ -4,6 +4,10 @@ org     0x7C00
 
 macro push [arg] { push arg }
 macro pop [arg] { pop arg }
+macro mbp
+{
+	xchg bx, bx
+}
 ; >>>> 16bit code
 
 section '.text16' executable
@@ -12,6 +16,8 @@ Use16
 
 public start
 start:
+	mbp
+
 	cli		     ; disabling interrupts
 	mov     ax, cs	  ; segment registers' init
 	mov     ds, ax
@@ -34,10 +40,14 @@ start:
 	int 0x10
 	pop cx, ax, bx, dx
 
+	mbp
+
 	; Вычислить и записать в дескриптор адрес 32-битного кода 
 	mov eax,ebx     ;восстанавливаем линейный адрес
 	add eax,entry_pm   ;теперь в EAX линейный адрес сегмента кода
+	add eax, 0x7c00
 	mov edi,d_code32+2   ;пишем базу в дескриптор
+	add edi, 0x7c00
 	stosw           ;биты 0..15
 	shr eax,16
 	stosb           ;биты 16..23

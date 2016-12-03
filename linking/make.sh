@@ -1,6 +1,11 @@
 #!/bin/bash
-rm boot.bin
-rm boot.flp
-fasm boot.asm boot.bin
-dd conv=notrunc bs=512 count=1 if=boot.bin of=boot.flp
-qemu-system-x86_64 -fda boot.flp -enable-kvm -cpu host -s
+echo ">>> rm"
+rm boot.o
+rm boot.bin -f
+rm boot.flp -f
+echo ">>> fasm"
+fasm boot.asm boot.o
+echo ">>> linker"
+ld -T linker.ld -melf_i386 boot.o
+echo ">>> qemu"
+# qemu-system-x86_64 -fda final -enable-kvm -cpu host -s
