@@ -12,9 +12,10 @@ SECTIONS
 		boot.o(.text16);
 		. = 510;
 		SHORT(0xaa55);
+		boot.o(.text32);
 	}
-	. = 512;
 	.text32 : {
+		. = 512;
 		FILL(0);
 		boot.o(.text32);
 	}

@@ -6,7 +6,7 @@ macro push [arg] { push arg }
 macro pop [arg] { pop arg }
 macro mbp
 {
-	xchg bx, bx
+	; xchg bx, bx
 }
 ; >>>> 16bit code
 
@@ -16,6 +16,7 @@ Use16
 
 public start
 start:
+	org     0x7C00
 	mbp
 
 	cli		     ; disabling interrupts
@@ -41,13 +42,22 @@ start:
 	pop cx, ax, bx, dx
 
 	mbp
+	; loading entry_pm to RAM
+	mov ah, 0x02    ; Read Disk Sectors
+	mov al, 0x01    ; Read one sector only (512 bytes per sector)
+	mov ch, 0x00    ; Track 0
+	mov cl, 0x02    ; Sector 2
+	mov dh, 0x00    ; Head 0
+	mov dl, 0x00    ; Drive 0 (Floppy 1)
+	mov bx, cs
+	mov es, bx   ; Segment 0x2000
+	mov bx, 0x7e00      ;  again remember segments bust be loaded from non immediate data
+	int 13h
 
 	; Вычислить и записать в дескриптор адрес 32-битного кода 
 	mov eax,ebx     ;восстанавливаем линейный адрес
-	add eax,entry_pm   ;теперь в EAX линейный адрес сегмента кода
-	add eax, 0x7c00
+	mov eax,entry_pm+0x7c00   ;теперь в EAX линейный адрес сегмента кода
 	mov edi,d_code32+2   ;пишем базу в дескриптор
-	add edi, 0x7c00
 	stosw           ;биты 0..15
 	shr eax,16
 	stosb           ;биты 16..23
@@ -98,14 +108,16 @@ g_base:     dd  GDTTable           ;адрес таблицы GDT
 section '.text32' executable align 10h
 use32               ;32-битный код!!!
 
-
 public entry_pm
+
 align   10h         ;код должен выравниваться по границе 16 байт
 entry_pm:
+	org 0x7e00
 	jmp k_main
 
 k_main:
 	pm_entry:
+		mbp
 		mov  eax, sel_video	      ;начало видеопамяти в видеорежиме 0x3
 		mov  es, ax
 		mov  esi, msg
