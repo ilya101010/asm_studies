@@ -2,11 +2,15 @@ format ELF
 
 org     0x7C00
 
+DEBUG = 0
+
 macro push [arg] { push arg }
 macro pop [arg] { pop arg }
 macro mbp
 {
-	; xchg bx, bx
+	if DEBUG=1
+		xchg bx, bx
+	end if
 }
 ; >>>> 16bit code
 
@@ -54,17 +58,6 @@ start:
 	mov bx, 0x7e00      ;  again remember segments bust be loaded from non immediate data
 	int 13h
 
-	; Вычислить и записать в дескриптор адрес 32-битного кода 
-	mov eax,ebx     ;восстанавливаем линейный адрес
-	mov eax,entry_pm+0x7c00   ;теперь в EAX линейный адрес сегмента кода
-	mov edi,d_code32+2   ;пишем базу в дескриптор
-	stosw           ;биты 0..15
-	shr eax,16
-	stosb           ;биты 16..23
-	add di,2        ;последние биты в конце дескриптора
-	shr ax,8
-	stosb           ;биты 24..31
-
 	; loading GDT
 	lgdt    fword   [GDTR]
 
@@ -86,7 +79,7 @@ start:
 	; O32 jmp far
 	db  66h ; O32
 	db  0eah ; JMP FAR
-	dd  0 ; offset
+	dd  entry_pm ; offset
 	dw  sel_code32 ; selector
 
 GDTTable:   ;таблица GDT
@@ -106,34 +99,43 @@ g_base:     dd  GDTTable           ;адрес таблицы GDT
 ; >>>> 32bit code
 
 section '.text32' executable align 10h
-use32               ;32-битный код!!!
+
+org     0x7E00
+use32               ; 32 bit
 
 public entry_pm
+extrn k_main
 
 align   10h         ;код должен выравниваться по границе 16 байт
 entry_pm:
-	org 0x7e00
-	jmp k_main
+	; >>> setting up all the basic stuff
+	cli		     ; disabling interrupts
+	mov     eax, cs	  ; segment registers' init
+	;mov     ds, eax
+	;mov     es, eax
+	;mov     ss, eax
+	mov     esp, 0x7C00      ; stack backwards => ok
 
-k_main:
-	pm_entry:
-		mbp
-		mov  eax, sel_video	      ;начало видеопамяти в видеорежиме 0x3
-		mov  es, ax
-		mov  esi, msg
-		mov  ah, 7
-		xor  edi, edi
-		.loop:			     ;цикл вывода сообщения
-		lodsb			    ;считываем очередной символ строки
-		test al, al		    ;если встретили 0
-		jz   .exit		    ;прекращаем вывод
-		stosw
-		jmp  .loop
-		.exit:
-		jmp  $			    ;зависаем
+	mbp
+	; >>> demo message
+	mov  eax, sel_video	      ;начало видеопамяти в видеорежиме 0x3
+	mov  es, ax
+	mov  esi, msg
+	mov  ah, 7
+	xor  edi, edi
+	.loop:			     ;цикл вывода сообщения
+	lodsb			    ;считываем очередной символ строки
+	test al, al		    ;если встретили 0
+	jz   .exit		    ;прекращаем вывод
+	stosw
+	jmp  .loop
+	.exit:
+	msg:
+	db  'Booting to k_main...', 0
+	; >>>Booting to k_main...
+	call k_main
+	jmp  $ ; wow! 
 
-		msg:
-		db  'Booting to C file...', 0
 
 
 

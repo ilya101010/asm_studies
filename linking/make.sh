@@ -5,7 +5,7 @@ rm boot.bin -f
 rm boot.flp -f
 echo ">>> fasm"
 fasm boot.asm boot.o
+echo ">>> gcc"
+gcc -m32 -o0 -c kernel.c -o kernel.o
 echo ">>> linker"
-ld -T linker.ld -melf_i386 boot.o
-echo ">>> qemu"
-# qemu-system-x86_64 -fda final -enable-kvm -cpu host -s
+ld -T linker.ld -melf_i386 boot.o kernel.o
