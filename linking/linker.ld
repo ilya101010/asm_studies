@@ -18,6 +18,5 @@ SECTIONS
 		. = 512;
 		FILL(0);
 		boot.o(.text32);
-		kernel.o(.text)
 	}
 }

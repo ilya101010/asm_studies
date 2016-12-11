@@ -1,6 +1,6 @@
 #!/bin/bash
 echo ">>> rm"
-rm boot.o
+rm boot.o -f
 rm boot.bin -f
 rm boot.flp -f
 echo ">>> fasm"

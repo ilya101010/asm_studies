@@ -1,16 +1,10 @@
 format ELF
 
-org     0x7C00
-
-DEBUG = 0
-
 macro push [arg] { push arg }
 macro pop [arg] { pop arg }
 macro mbp
 {
-	if DEBUG=1
-		xchg bx, bx
-	end if
+	xchg bx, bx
 }
 ; >>>> 16bit code
 
@@ -58,6 +52,8 @@ start:
 	mov bx, 0x7e00      ;  again remember segments bust be loaded from non immediate data
 	int 13h
 
+	mbp
+
 	; loading GDT
 	lgdt    fword   [GDTR]
 
@@ -79,7 +75,7 @@ start:
 	; O32 jmp far
 	db  66h ; O32
 	db  0eah ; JMP FAR
-	dd  entry_pm ; offset
+	dd  0x7E00 ; offset
 	dw  sel_code32 ; selector
 
 GDTTable:   ;таблица GDT
@@ -87,8 +83,8 @@ GDTTable:   ;таблица GDT
 d_zero:		db  0,0,0,0,0,0,0,0     
 ; 32 bit code seg
 d_code32:	db  0ffh,0ffh,0,0,0,10011010b,11001111b,0
-; video
-d_video:	db	0ffh, 07fh, 0x00, 80h, 0bh, 10010010b, 01000000b, 0x00
+; data
+d_data:		db	0ffh, 0ffh, 0x00, 0, 0, 10010010b, 11001111b, 0x00
 
 GDTSize     =   $-GDTTable
 
@@ -99,9 +95,8 @@ g_base:     dd  GDTTable           ;адрес таблицы GDT
 ; >>>> 32bit code
 
 section '.text32' executable align 10h
-
-org     0x7E00
-use32               ; 32 bit
+; org     0x7E00
+use32               ;32-битный код!!!
 
 public entry_pm
 extrn k_main
@@ -110,41 +105,18 @@ align   10h         ;код должен выравниваться по гра�
 entry_pm:
 	; >>> setting up all the basic stuff
 	cli		     ; disabling interrupts
-	mov     eax, cs	  ; segment registers' init
-	;mov     ds, eax
-	;mov     es, eax
-	;mov     ss, eax
-	mov     esp, 0x7C00      ; stack backwards => ok
-
-	mbp
-	; >>> demo message
-	mov  eax, sel_video	      ;начало видеопамяти в видеорежиме 0x3
-	mov  es, ax
-	mov  esi, msg
-	mov  ah, 7
-	xor  edi, edi
-	.loop:			     ;цикл вывода сообщения
-	lodsb			    ;считываем очередной символ строки
-	test al, al		    ;если встретили 0
-	jz   .exit		    ;прекращаем вывод
-	stosw
-	jmp  .loop
-	.exit:
-	msg:
-	db  'Booting to k_main...', 0
-	; >>>Booting to k_main...
+	; cs already defined
+	mov ax, sel_data
+	mov ss, ax
+	mov     esp, 0x7C00
 	call k_main
-	jmp  $ ; wow! 
-
-
-
-
+	
 ; >>>> GDT
 
 ; селекторы дескрипторов (RPL=0, TI=0)
 sel_zero    =   0000000b
 sel_code32  =   0001000b
-sel_video  	=   0010000b
+sel_data  	=   0010000b
 
 align   10h         ;выравнивание таблицы по границе 16 байт
 
