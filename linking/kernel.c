@@ -1,28 +1,28 @@
 #define mbp asm("xchgw %bx, %bx")
 
-#define black 0
-#define blue 1
-#define green 2
-#define cyan 3
-#define red 4
-#define magenta 5
-#define brown 6
-#define lgray 7
-#define dgray 8
-#define lblue 9
-#define lgreen 0xA
-#define lcyan 0xB
-#define lred 0xC
-#define lmagenta 0xD
-#define yellow 0xE
-#define white 0xF
-#define COLOR(fg, bg) fg & bg << 4 
+#define _black 0
+#define _blue 1
+#define _green 2
+#define _cyan 3
+#define _red 4
+#define _magenta 5
+#define _brown 6
+#define _gray 7
+#define _dgray 8
+#define _lblue 9
+#define _lgreen 0xA
+#define _lcyan 0xB
+#define _lred 0xC
+#define _lmagenta 0xD
+#define _yellow 0xE
+#define _white 0xF
+#define _COLOR(fg, bg) 0 | (fg | (bg * 0x10))
 
-void write_string(int i, int colour, char *string);
+void write_string(int colour, const char *string);
 
-void WriteCharacter(unsigned char c, unsigned char forecolour, unsigned char backcolour, int x, int y)
+void WriteCharacter(unsigned char c, unsigned char fg, unsigned char bg, int x, int y)
 {
-     char attrib = (backcolour << 4) | (forecolour & 0x0F);
+     char attrib = _COLOR(fg,bg);
      volatile char * where;
      where = (volatile char *)0xB8000 + (y * 80 + x) ;
      *where = c | (attrib << 8);
@@ -30,19 +30,17 @@ void WriteCharacter(unsigned char c, unsigned char forecolour, unsigned char bac
 
 void k_main()
 {
-	char* string = "hello world";
+	const char string[] = "Running C! The quick brown fox jumps over the lazy dog.";
 	mbp;
-	WriteCharacter('a',red,white,0,0);
-	a:
-	goto a;
+	write_string(_COLOR(_yellow,_red),string);
 }
 
-void write_string(int i, int colour, char *string)
+void write_string(int colour, const char *string)
 {
-	volatile char *video = (volatile char*)(0xB8000+i*2);
+	volatile char *video = (volatile char*)(0xB8000+160);
 	while(*string != 0)
 	{
-		*video++=*string;
-		*video++=colour;
+		*video++ = *string++;
+		*video++ = colour;
 	}
 }
