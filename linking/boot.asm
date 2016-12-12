@@ -109,7 +109,31 @@ entry_pm:
 	mov ax, sel_data
 	mov ss, ax
 	mov     esp, 0x7C00
+
+	mbp
+	; >>> demo message
+	mov ax, sel_data
+	mov ds, ax
+	mov es, ax
+	mov  esi, msg
+	add esi, 0x7C00 ; instead of org
+	mov  ah, 7
+	mov edi, 0xB8000
+	.loop:			     ;цикл вывода сообщения
+	lodsb			    ;считываем очередной символ строки
+	test al, al		    ;если встретили 0
+	jz   .exit		    ;прекращаем вывод
+	stosw
+	jmp  .loop
+	.exit:
+	
+
 	call k_main
+
+	jmp $
+
+	msg:
+	db  'Booting to k_main...', 0
 	
 ; >>>> GDT
 
