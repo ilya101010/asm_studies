@@ -1,27 +1,30 @@
-#define mbp asm("xchgw %bx, %bx")
+#define DEBUG
+#ifdef DEBUG
+	#define mbp asm("xchgw %bx, %bx")
+#endif
+#define _black 0
+#define _blue 1
+#define _green 2
+#define _cyan 3
+#define _red 4
+#define _magenta 5
+#define _brown 6
+#define _gray 7
+#define _dgray 8
+#define _lblue 9
+#define _lgreen 0xA
+#define _lcyan 0xB
+#define _lred 0xC
+#define _lmagenta 0xD
+#define _yellow 0xE
+#define _white 0xF
+#define _COLOR(fg, bg) 0 | (fg | (bg * 0x10))
 
-#define black 0
-#define blue 1
-#define green 2
-#define cyan 3
-#define red 4
-#define magenta 5
-#define brown 6
-#define lgray 7
-#define dgray 8
-#define lblue 9
-#define lgreen 0xA
-#define lcyan 0xB
-#define lred 0xC
-#define lmagenta 0xD
-#define yellow 0xE
-#define white 0xF
-#define COLOR(fg, bg) fg & bg << 4 
+void write_string(int colour, char *string, int y);
 
-// void write_string(int i, int colour, char *string);
-
-void k_main()
+void WriteCharacter(unsigned char c, unsigned char fg, unsigned char bg, int x, int y)
 {
+<<<<<<< HEAD
 	//const char* string = "hello world";
 	/*volatile char *video = (volatile char*)(0xB8000);
 	*video++='a';
@@ -36,17 +39,27 @@ void k_main()
 inline void WriteCharacter(unsigned char c, unsigned char forecolour, unsigned char backcolour, int x, int y)
 {
      char attrib = (backcolour << 4) | (forecolour & 0x0F);
+=======
+     char attrib = _COLOR(fg,bg);
+>>>>>>> cf3477d3106c28acb89d21396fdcad200ebe79b3
      volatile char * where;
      where = (volatile char *)0xB8000 + (y * 80 + x) ;
      *where = c | (attrib << 8);
 }
 
-/*void write_string(int i, int colour, char *string)
+void k_main()
 {
-	volatile char *video = (volatile char*)(0xB8000+i*2);
+	char string[] = "Kernel boot started";
+	mbp;
+	write_string(_COLOR(_lred,_black),string,1);
+}
+
+void write_string(int colour, char *string, int y)
+{
+	volatile char *video = (volatile char*)(0xB8000+160*y);
 	while(*string != 0)
 	{
-		*video++=*string;
-		*video++=colour;
+		*video++ = *string++;
+		*video++ = colour;
 	}
-}*/
+}

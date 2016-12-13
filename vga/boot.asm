@@ -4,7 +4,7 @@ macro push [arg] { push arg }
 macro pop [arg] { pop arg }
 macro mbp
 {
-	xchg bx, bx
+	; xchg bx, bx
 }
 ; >>>> 16bit code
 
@@ -38,6 +38,11 @@ start:
 	mov ah, 0x9
 	int 0x10
 	pop cx, ax, bx, dx
+
+	mbp
+	xor ah, ah ; ah = 0 => set video mode
+	mov al, 13h ; 640x480 16 colors
+	int 10h
 
 	mbp
 	; loading entry_pm to RAM
@@ -108,37 +113,14 @@ entry_pm:
 	; cs already defined
 	mov ax, sel_data
 	mov ss, ax
-	mov     esp, 0x7C00
-
-	mbp
-	; >>> demo message
-	mov ax, sel_data
 	mov ds, ax
-	mov es, ax
-	mov  esi, msg
-	add esi, 0x7C00 ; instead of org
-	mov  ah, 7
-	mov edi, 0xB8000
-	.loop:			     ;цикл вывода сообщения
-	lodsb			    ;считываем очередной символ строки
-	test al, al		    ;если встретили 0
-	jz   .exit		    ;прекращаем вывод
-	stosw
-	jmp  .loop
-	.exit:
-	
+	mov     esp, 0x7C00
+	mbp
 
 	call k_main
-<<<<<<< HEAD
-	jmp $
-=======
-
 	jmp $
 
-	msg:
-	db  'Booting to k_main...', 0
-	
->>>>>>> cf3477d3106c28acb89d21396fdcad200ebe79b3
+
 ; >>>> GDT
 
 ; селекторы дескрипторов (RPL=0, TI=0)
