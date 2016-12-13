@@ -27,10 +27,9 @@ void k_main()
 	*video++='a';
 	*video++=COLOR(white,black);*/
 	//write_string(10, COLOR(white, black), string);
+	
+	WriteCharacter('A',white, black, 0,0);
 	a:
-	mbp;
-	mbp;
-	mbp;
 	goto a;
 }
 

@@ -110,7 +110,7 @@ entry_pm:
 	mov ss, ax
 	mov     esp, 0x7C00
 	call k_main
-	
+	jmp $
 ; >>>> GDT
 
 ; селекторы дескрипторов (RPL=0, TI=0)
