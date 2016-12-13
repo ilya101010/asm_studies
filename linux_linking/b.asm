@@ -1,10 +1,3 @@
-format ELF
-
-public shift
-
-macro push [arg] { push arg }
-macro pop [arg] { pop arg }
-
 strcpy: ; (char* src, char* dest, int count)
 	push ebp
 	mov ebp, esp

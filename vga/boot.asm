@@ -47,7 +47,7 @@ start:
 	mbp
 	; loading entry_pm to RAM
 	mov ah, 0x02    ; Read Disk Sectors
-	mov al, 0x01    ; Read one sector only (512 bytes per sector)
+	mov al, 0x02    ; Read one sector only (512 bytes per sector)
 	mov ch, 0x00    ; Track 0
 	mov cl, 0x02    ; Sector 2
 	mov dh, 0x00    ; Head 0
@@ -119,6 +119,7 @@ entry_pm:
 
 	call k_main
 	jmp $
+
 
 
 ; >>>> GDT
