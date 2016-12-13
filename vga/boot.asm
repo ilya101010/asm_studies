@@ -4,7 +4,7 @@ macro push [arg] { push arg }
 macro pop [arg] { pop arg }
 macro mbp
 {
-	xchg bx, bx
+	; xchg bx, bx
 }
 ; >>>> 16bit code
 
@@ -40,7 +40,7 @@ start:
 	pop cx, ax, bx, dx
 
 	xor ah, ah ; ah = 0 => set video mode
-	mov al, 12h ; 640x480 16 colors
+	mov al, 13h ; 640x480 16 colors
 	int 10h
 
 	mbp

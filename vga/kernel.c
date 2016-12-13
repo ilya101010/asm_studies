@@ -2,39 +2,19 @@
 #ifdef DEBUG
 	#define mbp asm("xchgw %bx, %bx")
 #endif
-#define _black 0
-#define _blue 1
-#define _green 2
-#define _cyan 3
-#define _red 4
-#define _magenta 5
-#define _brown 6
-#define _gray 7
-#define _dgray 8
-#define _lblue 9
-#define _lgreen 0xA
-#define _lcyan 0xB
-#define _lred 0xC
-#define _lmagenta 0xD
-#define _yellow 0xE
-#define _white 0xF
-#define _COLOR(fg, bg) 0 | (fg | (bg * 0x10))
-
-void write_string(int colour, char *string, int y);
-
-void WriteCharacter(unsigned char c, unsigned char fg, unsigned char bg, int x, int y)
-{
-     char attrib = _COLOR(fg,bg);
-     volatile char * where;
-     where = (volatile char *)0xA0000 + (y * 80 + x) ;
-     *where = c | (attrib << 8);
-}
 
 void k_main()
 {
-	char string[] = "Kernel boot started";
-	mbp;
-	write_string(_COLOR(_lred,_black),string,1);
+
+	volatile char *video = (volatile char*)(0xA0000);
+	for(int y = 0; y<200; y++)
+	{
+		for(int x = 0; x<320; x++)
+		{
+			mbp;
+			*video++=(x % 256);
+		}
+	}
 }
 
 void write_string(int colour, char *string, int y)
