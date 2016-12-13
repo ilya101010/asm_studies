@@ -1,28 +1,25 @@
-#define DEBUG
+//#define DEBUG
 #ifdef DEBUG
 	#define mbp asm("xchgw %bx, %bx")
+#else
+	#define mbp
 #endif
+
+void fill_rect(int x, int y, int w, int h, int color);
 
 void k_main()
 {
-
-	volatile char *video = (volatile char*)(0xA0000);
-	for(int y = 0; y<200; y++)
-	{
-		for(int x = 0; x<320; x++)
-		{
-			mbp;
-			*video++=(x % 256);
-		}
-	}
+	for(int i = 0; i<32;i++)
+		fill_rect(10*i,0,10,10,i);
 }
 
-void write_string(int colour, char *string, int y)
+void fill_rect(int X, int Y, int w, int h, int color)
 {
-	volatile char *video = (volatile char*)(0xA0000+160*y);
-	while(*string != 0)
-	{
-		*video++ = *string++;
-		*video++ = colour;
-	}
+	volatile char *video = (volatile char*)(0xA0000);
+	for(int y = Y; y<Y+h; y++)
+		for(int x = X; x<X+w; x++)
+		{
+			video = (volatile char*)(0xA0000+320*y+x);
+			*video = color;
+		}
 }

@@ -39,6 +39,7 @@ start:
 	int 0x10
 	pop cx, ax, bx, dx
 
+	mbp
 	xor ah, ah ; ah = 0 => set video mode
 	mov al, 13h ; 640x480 16 colors
 	int 10h
@@ -112,6 +113,7 @@ entry_pm:
 	; cs already defined
 	mov ax, sel_data
 	mov ss, ax
+	mov ds, ax
 	mov     esp, 0x7C00
 	mbp
 
