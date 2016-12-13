@@ -26,7 +26,7 @@ void WriteCharacter(unsigned char c, unsigned char fg, unsigned char bg, int x, 
 {
      char attrib = _COLOR(fg,bg);
      volatile char * where;
-     where = (volatile char *)0xB8000 + (y * 80 + x) ;
+     where = (volatile char *)0xA0000 + (y * 80 + x) ;
      *where = c | (attrib << 8);
 }
 
@@ -39,7 +39,7 @@ void k_main()
 
 void write_string(int colour, char *string, int y)
 {
-	volatile char *video = (volatile char*)(0xB8000+160*y);
+	volatile char *video = (volatile char*)(0xA0000+160*y);
 	while(*string != 0)
 	{
 		*video++ = *string++;

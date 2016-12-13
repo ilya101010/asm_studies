@@ -39,6 +39,10 @@ start:
 	int 0x10
 	pop cx, ax, bx, dx
 
+	xor ah, ah ; ah = 0 => set video mode
+	mov al, 12h ; 640x480 16 colors
+	int 10h
+
 	mbp
 	; loading entry_pm to RAM
 	mov ah, 0x02    ; Read Disk Sectors
@@ -99,7 +103,6 @@ section '.text32' executable align 10h
 use32               ;32-битный код!!!
 
 public entry_pm
-public enter_vga
 extrn k_main
 
 align   10h         ;код должен выравниваться по границе 16 байт
@@ -110,35 +113,10 @@ entry_pm:
 	mov ax, sel_data
 	mov ss, ax
 	mov     esp, 0x7C00
-
 	mbp
-	; >>> demo message
-	mov ax, sel_data
-	mov ds, ax
-	mov es, ax
-	mov  esi, msg
-	add esi, 0x7C00 ; instead of org
-	mov  ah, 7
-	mov edi, 0xB8000
-	.loop:			     ;цикл вывода сообщения
-	lodsb			    ;считываем очередной символ строки
-	test al, al		    ;если встретили 0
-	jz   .exit		    ;прекращаем вывод
-	stosw
-	jmp  .loop
-	.exit:
-	
 
 	call k_main
-
 	jmp $
-
-	msg:
-	db  'Booting to k_main...', 0
-
-enter_vga:
-	pushad
-	popad
 
 
 ; >>>> GDT

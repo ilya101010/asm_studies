@@ -99,7 +99,6 @@ section '.text32' executable align 10h
 use32               ;32-битный код!!!
 
 public entry_pm
-public enter_vga
 extrn k_main
 
 align   10h         ;код должен выравниваться по границе 16 байт
@@ -135,12 +134,7 @@ entry_pm:
 
 	msg:
 	db  'Booting to k_main...', 0
-
-enter_vga:
-	pushad
-	popad
-
-
+	
 ; >>>> GDT
 
 ; селекторы дескрипторов (RPL=0, TI=0)
