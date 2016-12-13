@@ -38,10 +38,7 @@ void WriteCharacter(unsigned char c, unsigned char fg, unsigned char bg, int x, 
 
 inline void WriteCharacter(unsigned char c, unsigned char forecolour, unsigned char backcolour, int x, int y)
 {
-     char attrib = (backcolour << 4) | (forecolour & 0x0F);
-=======
      char attrib = _COLOR(fg,bg);
->>>>>>> cf3477d3106c28acb89d21396fdcad200ebe79b3
      volatile char * where;
      where = (volatile char *)0xB8000 + (y * 80 + x) ;
      *where = c | (attrib << 8);
