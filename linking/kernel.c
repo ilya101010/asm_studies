@@ -1,5 +1,7 @@
-#define mbp asm("xchgw %bx, %bx")
-
+#define DEBUG
+#ifdef DEBUG
+	#define mbp asm("xchgw %bx, %bx")
+#endif
 #define _black 0
 #define _blue 1
 #define _green 2
@@ -18,7 +20,7 @@
 #define _white 0xF
 #define _COLOR(fg, bg) 0 | (fg | (bg * 0x10))
 
-void write_string(int colour, const char *string);
+void write_string(int colour, char *string, int y);
 
 void WriteCharacter(unsigned char c, unsigned char fg, unsigned char bg, int x, int y)
 {
@@ -30,14 +32,18 @@ void WriteCharacter(unsigned char c, unsigned char fg, unsigned char bg, int x, 
 
 void k_main()
 {
-	const char string[] = "Running C! The quick brown fox jumps over the lazy dog.";
+	char string[] = "Running C! The quick brown fox jumps over the lazy dog.";
 	mbp;
-	write_string(_COLOR(_yellow,_red),string);
+	for(int i = 1; i<10; i++)
+	{
+		string[0]='0'+i;
+		write_string(_COLOR(2*i%16,i),string,i);
+	}
 }
 
-void write_string(int colour, const char *string)
+void write_string(int colour, char *string, int y)
 {
-	volatile char *video = (volatile char*)(0xB8000+160);
+	volatile char *video = (volatile char*)(0xB8000+160*y);
 	while(*string != 0)
 	{
 		*video++ = *string++;
