@@ -7,6 +7,9 @@
 
 #define rule 30
 
+#define s_height 200
+#define s_width 300
+
 extern void shift(char *state, int count);
 
 void put_line(char* state, int count, int color_0, int color_1, int y);
@@ -19,7 +22,7 @@ void k_main()
 	for(int i = 0; i<200; i++)
 	{
 		mbp;
-		put_line(state,40,0,32+(i % 32),i);
+		put_line(state,40,i,0,i);
 		eval(state,40);
 	}
 }
