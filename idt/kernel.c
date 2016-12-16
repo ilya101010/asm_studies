@@ -1,3 +1,10 @@
+#define DEBUG
+#ifdef DEBUG
+	#define mbp asm("xchgw %bx, %bx")
+#else
+	#define mbp
+#endif
+
 #include <system.h>
 
 void k_main()
@@ -11,4 +18,7 @@ void k_main()
 		fill_rect(10,10,50,50,10);
 		fill_rect(10,10,50,50,20);
 	}*/
+	int i = 0;
+	mbp;
+	i = 1/i;
 }

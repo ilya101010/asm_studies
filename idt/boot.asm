@@ -132,6 +132,8 @@ idt_load:
     pop ebp
     ret
 
+; source = http://www.osdever.net/bkerndev/Docs/isrs.htm
+
 ; >>>> GDT
 
 ; селекторы дескрипторов (RPL=0, TI=0)

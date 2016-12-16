@@ -8,10 +8,13 @@ rm boot.flp -f
 echo ">>> fasm"
 fasm boot.asm boot.o
 fasm b.asm b.o
+fasm idt.asm idta.o
+# fasm idt.asm idta.o
 echo ">>> gcc"
 gcc -m32 -o0 -c kernel.c -o kernel.o -ffreestanding -nostdlib -lgcc -Iinclude
 gcc -m32 -o0 -c idt.c -o idt.o -ffreestanding -nostdlib -lgcc -Iinclude
 gcc -m32 -o0 -c system.c -o system.o -ffreestanding -nostdlib -lgcc -Iinclude
 gcc -m32 -o0 -c vga.c -o vga.o -ffreestanding -nostdlib -lgcc -Iinclude
+gcc -m32 -o0 -c isrc.c -o isrc.o -ffreestanding -nostdlib -lgcc -Iinclude
 echo ">>> linker"
-ld -T linker.ld -melf_i386 boot.o kernel.o b.o idt.o system.o vga.o
+ld -T linker.ld -melf_i386 boot.o kernel.o b.o idt.o idta.o system.o vga.o isrc.o
