@@ -129,16 +129,10 @@ entry_pm:
 	
 
 	call k_main
-<<<<<<< HEAD
-	jmp $
-=======
-
 	jmp $
 
 	msg:
 	db  'Booting to k_main...', 0
-	
->>>>>>> cf3477d3106c28acb89d21396fdcad200ebe79b3
 ; >>>> GDT
 
 ; селекторы дескрипторов (RPL=0, TI=0)

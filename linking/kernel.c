@@ -22,21 +22,7 @@
 
 void write_string(int colour, char *string, int y);
 
-void WriteCharacter(unsigned char c, unsigned char fg, unsigned char bg, int x, int y)
-{
-<<<<<<< HEAD
-	//const char* string = "hello world";
-	/*volatile char *video = (volatile char*)(0xB8000);
-	*video++='a';
-	*video++=COLOR(white,black);*/
-	//write_string(10, COLOR(white, black), string);
-	
-	WriteCharacter('A',white, black, 0,0);
-	a:
-	goto a;
-}
-
-inline void WriteCharacter(unsigned char c, unsigned char forecolour, unsigned char backcolour, int x, int y)
+inline void WriteCharacter(unsigned char c, unsigned char fg, unsigned char bg, int x, int y)
 {
      char attrib = _COLOR(fg,bg);
      volatile char * where;

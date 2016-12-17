@@ -40,11 +40,6 @@ start:
 	pop cx, ax, bx, dx
 
 	;mbp
-	xor ah, ah ; ah = 0 => set video mode
-	mov al, 13h ; 640x480 16 colors
-	int 10h
-
-	;mbp
 	; loading entry_pm to RAM
 	mov ah, 0x02    ; Read Disk Sectors
 	mov al, 0x10    ; Read one sector only (512 bytes per sector) - it'll be enough
