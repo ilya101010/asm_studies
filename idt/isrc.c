@@ -147,6 +147,6 @@ void fault_handler(struct regs *r)
     {
         //puts(exception_messages[r->int_no]);
         //puts(" Exception. System Halted!\n");
-        for (;;);
-    }   
+        //for (;;);
+    }
 }
