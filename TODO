@@ -1,0 +1,4 @@
+- [x] IDT (exceptions)
+- [ ] IDT - IRQ (PIC)
+- [ ] VGA fonts (own or by VGA?)
+- [ ] C lib? (FreeType pleaase)
