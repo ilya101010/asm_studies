@@ -1,4 +1,4 @@
-// system
+// system lib
 
 void *memset(void *dest, char val, int count)
 {
