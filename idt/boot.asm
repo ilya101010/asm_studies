@@ -114,19 +114,6 @@ entry_pm:
 	call k_main
 	jmp $
 
-public idt_load
-
-idt_load:
-	push ebp
-	mov ebp, esp
-	push eax
-	mov eax, [ebp+8]
-	mbp
-    lidt [eax]
-    pop eax
-    pop ebp
-    ret
-
 ; source = http://www.osdever.net/bkerndev/Docs/isrs.htm
 
 ; >>>> GDT
@@ -136,7 +123,7 @@ sel_zero    =   0000000b
 sel_code32  =   0001000b
 sel_data  	=   0010000b
 
-align   10h         ;выравнивание таблицы по границе 16 байт
+; align   10h         ;выравнивание таблицы по границе 16 байт
 
 	; Here goes C flat binary?
 
