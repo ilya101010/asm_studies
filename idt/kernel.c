@@ -27,11 +27,16 @@
 
 void k_main()
 {
-	mbp;
+	// mbp;
+	char* string = "Kernel boot started\0";
+	char a = 'a';
+	// mbp;
 	volatile char *video = (volatile char*)0xB8000;
-	*video++ = 'a';	*video++ = _COLOR(_black,_white);
-	*video++ = 'a';	*video++ = _COLOR(_black,_white);
-	*video++ = 'a';	*video++ = _COLOR(_black,_white);
-	*video++ = 'a';	*video++ = _COLOR(_black,_white);
-	*video++ = 'a';	*video++ = _COLOR(_black,_white);
+	for(int i = 0; i<10; i++)
+	{
+		mbp;
+		string++;
+		*video++ = *string;
+		*video++ = _COLOR(_white,_green);
+	}
 }

@@ -21,11 +21,8 @@ SECTIONS
 		boot.o(.text32);
 		*(.text)
 	}
-	.rodata : {
-		*(.rodata)
-	}
 
-	/* Read-write data (initialized) */
+		/* Read-write data (initialized) */
 	.data : {
 		*(.data)
 	}
@@ -34,5 +31,9 @@ SECTIONS
 	.bss : {
 		*(COMMON)
 		*(.bss)
+	}
+
+	.rodata : {
+		*(.rodata)
 	}
 }
