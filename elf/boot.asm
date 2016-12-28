@@ -115,6 +115,25 @@ macro print ; ah - color; esi - source; edi - line number
 	jmp  .loop
 	.exit:
 	pop eax, edi, esi
+	inc edi
+}
+
+macro print_len ; cx - length; ah - color; esi - source; edi - line number
+{
+	push esi, edi, eax
+	imul edi, 160
+	add edi, 0xB8000
+	local .loop
+	local .exit
+	.loop:			     ;цикл вывода сообщения
+	lodsb			    ;считываем очередной символ строки
+	test al, al		    ;если встретили 0
+	jz   .exit		    ;прекращаем вывод
+	stosw
+	loop .loop
+	.exit:
+	pop eax, edi, esi
+	inc edi
 }
 
 align   10h         ;код должен выравниваться по границе 16 байт0
@@ -141,16 +160,13 @@ entry_pm:
 	jnz not_elf
 
 	mbp
-	; >>> demo message
 
+	; >>> magic - OK
 	mov  esi, elf_mag_ok
 	add esi, 0x7C00 ; instead of org
 	mov  ah, red
-	mov edi, 10
+	mov edi, 0
 	print
-	mov edi, 1
-	print
-
 	not_elf:
 
 ;	call k_main
@@ -169,7 +185,6 @@ sel_data  	=   0010000b
 ;colors
 green = 0x0A
 red = 0x04
-
 
 	; Here goes C flat binary?
 

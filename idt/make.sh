@@ -14,4 +14,4 @@ fasm boot.asm boot.o
 echo ">>> gcc"
 gcc -m32 -o0 -c kernel.c -o kernel.o -ffreestanding -nostdlib -lgcc -Iinclude
 echo ">>> linker"
-ld -T linker.ld -melf_i386 boot.o kernel.o
+ld -T linker.ld -melf_i386 boot.o kernel.o -r

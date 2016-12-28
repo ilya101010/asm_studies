@@ -27,7 +27,7 @@
 
 void k_main()
 {
-	// mbp;
+	mbp;
 	char* string = "Kernel boot started\0";
 	char a = 'a';
 	// mbp;

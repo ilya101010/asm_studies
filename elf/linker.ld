@@ -1,5 +1,5 @@
 OUTPUT_FORMAT("binary")
-OUTPUT("final")
+OUTPUT("final.img")
 ENTRY(start)
 phys = 0x7C00;
 
