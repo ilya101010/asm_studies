@@ -118,24 +118,6 @@ macro print ; ah - color; esi - source; edi - line number
 	inc edi
 }
 
-macro print_len ; cx - length; ah - color; esi - source; edi - line number
-{
-	push esi, edi, eax
-	imul edi, 160
-	add edi, 0xB8000
-	local .loop
-	local .exit
-	.loop:			     ;цикл вывода сообщения
-	lodsb			    ;считываем очередной символ строки
-	test al, al		    ;если встретили 0
-	jz   .exit		    ;прекращаем вывод
-	stosw
-	loop .loop
-	.exit:
-	pop eax, edi, esi
-	inc edi
-}
-
 align   10h         ;код должен выравниваться по границе 16 байт0
 entry_pm:
 	; >>> setting up all the basic stuff
@@ -151,30 +133,51 @@ entry_pm:
 	mov es, ax
 	
 	mbp
-	; checking elf file
-	; magic number
+	; >>> checking elf file
+	; >> magic number check
 	mov esi, 0x8000
 	mov edi, elf_mag
 	add edi, 0x7C00
 	cmpsd
 	jnz not_elf
-
 	mbp
-
-	; >>> magic - OK
+	; > magic - OK !
 	mov  esi, elf_mag_ok
 	add esi, 0x7C00 ; instead of org
-	mov  ah, red
+	mov  ah, green
 	mov edi, 0
 	print
+	; >> checking e_type
+	mov esi, 0x8010
+	lodsw
+	mov ebx, 0x0001
+	cmp ax, bx
+	mbp
+	jnz not_elf
+	mov esi,elf_e_type_ok
+	add esi, 0x7C00
+	mov ah, green
+	print
 	not_elf:
-
-;	call k_main
+	mov esi,error_str
+	add esi, 0x7C00
+	mov ah, red
+	print
 	jmp $
+
+print_hexw: ; full function, not a macro; esi - address in tui, edi - line number (inc-s)
+	push ebx, eax, edi, esi
+	lodsw
+	mov ebx, eax
+	shr eax, 4
+	mov 
+	pop esi, edi, eax, ebx
+
 
 ; >>>> Data
 	elf_mag_ok: db "ELF magic number - OK", 0
-	elf_mag_er: db "ERROR: ELF magic number", 0
+	elf_e_type_ok: db "ELF e_type - relocatable - OK",0
+	error_str: db "ERROR! entering infinite loop",0 
 	elf_mag: db 0x7f, 'E', 'L', 'F' ; ELF magic number
 
 ; селекторы дескрипторов (RPL=0, TI=0)
