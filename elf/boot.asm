@@ -162,18 +162,22 @@ entry_pm:
 	; I - get addess to .shstrab
 
 	; mov esi, 0x8121
-	mov eax, [elf_load+elf_shstrndx_off] ; .shstrtab index
 	xor ebx, ebx
-	mov ebx, [elf_load+elf_shentsize_off] ; size of one SHT entry
-	inc eax
+	xor eax, eax
+	mov ax, [elf_load+elf_shstrndx_off] ; = 2 .shstrtab index
+	mov bx, [elf_load+elf_shentsize_off] ; = 0x28 size of one SHT entry
+	; inc eax
 	mul ebx
-	mov esi
-	add esi, [elf_load+elf_shoff_off] ; esi - address of start of .shstrtab
+	mov esi, [elf_load+elf_shoff_off] ; getting address for SHT
+	add esi, eax
+	add esi, elf_load
 	mov ebx, [esi+0x10] ; offset in elf for section
-	mov esi, [esi]
-	add esi, ebx ; offset to .shstrab string in .shstrab
-	add esi
+	mov eax, [esi]
+	mov esi, elf_load
+	add esi, ebx
+	add esi, eax
 	mbp
+	mov ah, green
 	print
 	not_elf:
 	mov esi,error_str
