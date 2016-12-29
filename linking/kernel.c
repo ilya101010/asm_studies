@@ -22,7 +22,7 @@
 
 void write_string(int colour, char *string, int y);
 
-inline void WriteCharacter(unsigned char c, unsigned char fg, unsigned char bg, int x, int y)
+inline void WriteCharacter(unsigned char c, unsigned char forecolour, unsigned char backcolour, int x, int y)
 {
      char attrib = _COLOR(fg,bg);
      volatile char * where;

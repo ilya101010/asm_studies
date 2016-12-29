@@ -1,3 +1,4 @@
 *.bin
 *.o
+*.out
 bx_enh_dbg.ini

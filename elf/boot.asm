@@ -158,20 +158,24 @@ entry_pm:
 	add esi, 0x7C00
 	mov ah, green
 	print
+	; print out some name from string index
+	mbp
+	; I - get addess to .shstrab
+
+	mov esi, [elf_load+elf_shstrndx_off] ; .shstrtab index
+	xor ebx, ebx
+	mov bx, [elf_load+elf_shentsize_off] ; size of one SHT entry
+	imul esi, ebx
+	add esi, elf_load
+	add esi, [elf_load+elf_shoff_off]
+	mov esi, [esi] ; offset to .shstrab from .shstrab entry!
+	mbp
+	print
 	not_elf:
 	mov esi,error_str
 	add esi, 0x7C00
 	mov ah, red
-	print
 	jmp $
-
-print_hexw: ; full function, not a macro; esi - address in tui, edi - line number (inc-s)
-	push ebx, eax, edi, esi
-	lodsw
-	mov ebx, eax
-	shr eax, 4
-	mov 
-	pop esi, edi, eax, ebx
 
 
 ; >>>> Data
@@ -180,12 +184,24 @@ print_hexw: ; full function, not a macro; esi - address in tui, edi - line numbe
 	error_str: db "ERROR! entering infinite loop",0 
 	elf_mag: db 0x7f, 'E', 'L', 'F' ; ELF magic number
 
-; селекторы дескрипторов (RPL=0, TI=0)
+; >>>> Const
+
+; >>> addresses (x86 elf)
+elf_load = 0x8000
+elf_type_off = 0x10
+elf_shoff_off = 0x20
+elf_shentsize_off = 0x2E
+elf_shnum_off = 0x30
+elf_shstrndx_off = 0x32
+elf_head
+
+
+; >>> селекторы дескрипторов (RPL=0, TI=0)
 sel_zero    =   0000000b
 sel_code32  =   0001000b
 sel_data  	=   0010000b
 
-;colors
+; >>> colors
 green = 0x0A
 red = 0x04
 
