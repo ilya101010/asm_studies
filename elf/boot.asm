@@ -135,7 +135,7 @@ entry_pm:
 	mbp
 	; >>> checking elf file
 	; >> magic number check
-	mov esi, 0x8000
+	mov esi, elf_load
 	mov edi, elf_mag
 	add edi, 0x7C00
 	cmpsd
@@ -148,8 +148,7 @@ entry_pm:
 	mov edi, 0
 	print
 	; >> checking e_type
-	mov esi, 0x8010
-	lodsw
+	mov eax, [elf_load+elf_type_off]
 	mov ebx, 0x0001
 	cmp ax, bx
 	mbp
@@ -162,19 +161,25 @@ entry_pm:
 	mbp
 	; I - get addess to .shstrab
 
-	mov esi, [elf_load+elf_shstrndx_off] ; .shstrtab index
+	; mov esi, 0x8121
+	mov eax, [elf_load+elf_shstrndx_off] ; .shstrtab index
 	xor ebx, ebx
-	mov bx, [elf_load+elf_shentsize_off] ; size of one SHT entry
-	imul esi, ebx
-	add esi, elf_load
-	add esi, [elf_load+elf_shoff_off]
-	mov esi, [esi] ; offset to .shstrab from .shstrab entry!
+	mov ebx, [elf_load+elf_shentsize_off] ; size of one SHT entry
+	inc eax
+	mul ebx
+	mov esi
+	add esi, [elf_load+elf_shoff_off] ; esi - address of start of .shstrtab
+	mov ebx, [esi+0x10] ; offset in elf for section
+	mov esi, [esi]
+	add esi, ebx ; offset to .shstrab string in .shstrab
+	add esi
 	mbp
 	print
 	not_elf:
 	mov esi,error_str
 	add esi, 0x7C00
 	mov ah, red
+	print
 	jmp $
 
 
@@ -188,12 +193,12 @@ entry_pm:
 
 ; >>> addresses (x86 elf)
 elf_load = 0x8000
+; >> elf_header
 elf_type_off = 0x10
 elf_shoff_off = 0x20
 elf_shentsize_off = 0x2E
 elf_shnum_off = 0x30
 elf_shstrndx_off = 0x32
-elf_head
 
 
 ; >>> селекторы дескрипторов (RPL=0, TI=0)
