@@ -1,5 +1,7 @@
 format ELF
 
+include 'elf.inc'
+
 macro push [arg] { push arg }
 macro pop [arg] { pop arg }
 macro mbp
@@ -135,7 +137,31 @@ entry_pm:
 	mbp
 	; >>> checking elf file
 	; >> magic number check
-	mov esi, elf_load
+
+	virtual at elf_load
+		e_ident.ei_mag dd ?
+		e_ident.ei_class db ?
+		e_ident.ei_data db ?
+		e_ident.ei_version db ?
+		e_ident.ei_osabi db ?
+		e_ident.ei_abiversion db ?
+		times 7 db ? ; ei_pad - unused
+		e_type dw ?
+		e_machine dw ?
+		e_version dd ?
+		e_entry dd ?
+		e_phoff dd ?
+		e_shoff dd ?
+		e_flags dd ?
+		e_ehsize dw ?
+		e_phentsize dw ?
+		e_phnum dw ?
+		e_shentsize dw ?
+		e_shnum dw ?
+		e_shstrndx dw ?
+	end virtual
+
+	mov esi, e_ident.ei_mag
 	mov edi, elf_mag
 	add edi, 0x7C00
 	cmpsd
@@ -148,8 +174,8 @@ entry_pm:
 	mov edi, 0
 	print
 	; >> checking e_type
-	mov eax, [elf_load+elf_type_off]
-	mov ebx, 0x0001
+	mov ax, [e_type]
+	mov bx, 0x0001
 	cmp ax, bx
 	mbp
 	jnz not_elf
@@ -164,28 +190,48 @@ entry_pm:
 	; mov esi, 0x8121
 	xor ebx, ebx
 	xor eax, eax
-	mov ax, [elf_load+elf_shstrndx_off] ; = 2 .shstrtab index
-	mov bx, [elf_load+elf_shentsize_off] ; = 0x28 size of one SHT entry
+	mov ax, [e_shstrndx] ; = 2 .shstrtab index
+	mov bx, [e_shentsize] ; = 0x28 size of one SHT entry
 	; inc eax
-	mul ebx
-	mov esi, [elf_load+elf_shoff_off] ; getting address for SHT
+	mul bx ; eax = offset
+	mov esi, [e_shoff] ; getting address for SHT
 	add esi, eax
 	add esi, elf_load
-	mov ebx, [esi+0x10] ; offset in elf for section
-	mov eax, [esi]
+	; lea esi, [e_shoff]+eax
+	sct sh esi
+	mov ebx, [sct.sh_offset] ; offset in elf for section
+	mov eax, [sct.sh_name]
 	mov esi, elf_load
 	add esi, ebx
 	add esi, eax
 	mbp
 	mov ah, green
 	print
+
+	xor eax, eax
+	xor ebx, ebx
+	mov ax, [e_shstrndx] ; = 2 .shstrtab index
+	mov bx, [e_shentsize] ; = 0x28 size of one SHT entry
+	mul bx ; eax = offset of .shstrtab in SHT
+	add eax, [e_shoff]
+	add eax, elf_load
+	@@ sh eax
+	mov ebx, [@b.sh_offset]
+	add ebx, elf_load ; physical address of .shstrtab
+	xor ecx, ecx
+	mov cx, [e_shnum]
+	.lp:
+		xor eax, eax
+		mov ax, cx
+		mul [e_shentsize]
+	loop .lp
+
 	not_elf:
 	mov esi,error_str
 	add esi, 0x7C00
 	mov ah, red
 	print
 	jmp $
-
 
 ; >>>> Data
 	elf_mag_ok: db "ELF magic number - OK", 0
