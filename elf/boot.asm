@@ -185,29 +185,6 @@ entry_pm:
 	print
 	; print out some name from string index
 	mbp
-	; I - get addess to .shstrab
-
-	; mov esi, 0x8121
-	xor ebx, ebx
-	xor eax, eax
-	mov ax, [e_shstrndx] ; = 2 .shstrtab index
-	mov bx, [e_shentsize] ; = 0x28 size of one SHT entry
-	; inc eax
-	mul bx ; eax = offset
-	mov esi, [e_shoff] ; getting address for SHT
-	add esi, eax
-	add esi, elf_load
-	; lea esi, [e_shoff]+eax
-	sct sh esi
-	mov ebx, [sct.sh_offset] ; offset in elf for section
-	mov eax, [sct.sh_name]
-	mov esi, elf_load
-	add esi, ebx
-	add esi, eax
-	mbp
-	mov ah, green
-	print
-
 	xor eax, eax
 	xor ebx, ebx
 	mov ax, [e_shstrndx] ; = 2 .shstrtab index
@@ -215,15 +192,24 @@ entry_pm:
 	mul bx ; eax = offset of .shstrtab in SHT
 	add eax, [e_shoff]
 	add eax, elf_load
-	@@ sh eax
-	mov ebx, [@b.sh_offset]
+	s sh eax
+	mov ebx, [s.sh_offset]
 	add ebx, elf_load ; physical address of .shstrtab
 	xor ecx, ecx
 	mov cx, [e_shnum]
+	xor eax, eax
+	mov eax, elf_load
+	add eax, [e_shoff]
 	.lp:
-		xor eax, eax
-		mov ax, cx
-		mul [e_shentsize]
+		mov esi, ebx
+		add esi, [s.sh_name]
+		push eax
+			mov ah, green
+			print
+		pop eax
+		xor edx, edx
+		mov dx, [e_shentsize]
+		add eax, edx
 	loop .lp
 
 	not_elf:
