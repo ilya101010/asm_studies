@@ -1,13 +1,8 @@
 format ELF
 
+include 'macro.inc'
 include 'elf.inc'
 
-macro push [arg] { push arg }
-macro pop [arg] { pop arg }
-macro mbp
-{
-	xchg bx, bx
-}
 ; >>>> 16bit code
 
 section '.text16' executable
