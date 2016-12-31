@@ -183,35 +183,28 @@ entry_pm:
 	add esi, 0x7C00
 	mov ah, green
 	print
-	; print out some name from string index
+	; looking for symtab (sh_type = 2)
 	mbp
-	xor eax, eax
-	xor ebx, ebx
-	mov ax, [e_shstrndx] ; = 2 .shstrtab index
-	mov bx, [e_shentsize] ; = 0x28 size of one SHT entry
-	mul bx ; eax = offset of .shstrtab in SHT
-	add eax, [e_shoff]
-	add eax, elf_load
-	s sh eax
-	mov ebx, [s.sh_offset]
-	add ebx, elf_load ; physical address of .shstrtab
+	s shdr eax
 	xor ecx, ecx
 	mov cx, [e_shnum]
 	xor eax, eax
 	mov eax, elf_load
 	add eax, [e_shoff]
 	.lp:
-		mov esi, ebx
-		add esi, [s.sh_name]
-		push eax
-			mov ah, green
-			print
-		pop eax
+		mov ebx, [s.sh_type]
+		cmp ebx, 2
+		jz symtab_found
 		xor edx, edx
 		mov dx, [e_shentsize]
 		add eax, edx
 	loop .lp
-
+	jmp not_elf
+	symtab_found:
+	mov esi, elf_symtab_ok
+	add esi, 0x7c00
+	mov ah, green
+	print
 	not_elf:
 	mov esi,error_str
 	add esi, 0x7C00
@@ -222,6 +215,7 @@ entry_pm:
 ; >>>> Data
 	elf_mag_ok: db "ELF magic number - OK", 0
 	elf_e_type_ok: db "ELF e_type - relocatable - OK",0
+	elf_symtab_ok: db "ELF symtable - OK", 0
 	error_str: db "ERROR! entering infinite loop",0 
 	elf_mag: db 0x7f, 'E', 'L', 'F' ; ELF magic number
 
