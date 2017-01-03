@@ -2,6 +2,7 @@ format ELF
 
 include 'macro.inc'
 include 'elf.inc'
+; include 'proc32.inc' - these macros are SICK and TIRED of your damn EMAILS!
 
 ; >>>> 16bit code
 
@@ -133,79 +134,72 @@ entry_pm:
 	; >>> checking elf file
 	; >> magic number check
 
-	virtual at elf_load
-		e_ident.ei_mag dd ?
-		e_ident.ei_class db ?
-		e_ident.ei_data db ?
-		e_ident.ei_version db ?
-		e_ident.ei_osabi db ?
-		e_ident.ei_abiversion db ?
-		times 7 db ? ; ei_pad - unused
-		e_type dw ?
-		e_machine dw ?
-		e_version dd ?
-		e_entry dd ?
-		e_phoff dd ?
-		e_shoff dd ?
-		e_flags dd ?
-		e_ehsize dw ?
-		e_phentsize dw ?
-		e_phnum dw ?
-		e_shentsize dw ?
-		e_shnum dw ?
-		e_shstrndx dw ?
-	end virtual
+	E ehdr elf_load
 
-	mov esi, e_ident.ei_mag
+	mov esi, E.e_ident.ei_mag
 	mov edi, elf_mag
 	add edi, 0x7C00
 	cmpsd
 	jnz not_elf
 	mbp
 	; > magic - OK !
-	mov  esi, elf_mag_ok
-	add esi, 0x7C00 ; instead of org
-	mov  ah, green
-	mov edi, 0
-	print
+	ccall Print, elf_mag_ok+0x7c00, 0, green
 	; >> checking e_type
-	mov ax, [e_type]
+	mov ax, [E.e_type]
 	mov bx, 0x0001
 	cmp ax, bx
 	mbp
 	jnz not_elf
-	mov esi,elf_e_type_ok
-	add esi, 0x7C00
-	mov ah, green
-	print
+	ccall Print, elf_e_type_ok+0x7c00, 1, green
 	; looking for symtab (sh_type = 2)
 	mbp
 	s shdr eax
 	xor ecx, ecx
-	mov cx, [e_shnum]
+	mov cx, [E.e_shnum]
 	xor eax, eax
 	mov eax, elf_load
-	add eax, [e_shoff]
+	add eax, [E.e_shoff]
 	.lp:
 		mov ebx, [s.sh_type]
 		cmp ebx, 2
 		jz symtab_found
 		xor edx, edx
-		mov dx, [e_shentsize]
+		mov dx, [E.e_shentsize]
 		add eax, edx
 	loop .lp
 	jmp not_elf
 	symtab_found:
-	mov esi, elf_symtab_ok
-	add esi, 0x7c00
-	mov ah, green
-	print
+	ccall Print, elf_symtab_ok+0x7c00, 2, green
+	; s contains info about .symtab
+	mbp
+	mov ecx, [s.sh_size]
+	shr ecx, 4 ; sym_size=16; ebx = number of symbols
 	not_elf:
-	mov esi,error_str
-	add esi, 0x7C00
-	mov ah, red
-	print
+	ccall Print, error_str+0x7c00, 24, red
+	mbp
 	jmp $
+
+; >>>> Procedures
+; Print(src,y,color)
+Print:
+	push ebp
+	mov ebp, esp
+	push esi, edi, eax
+	mov esi, [ebp+8]
+	mov edi, [ebp+12]
+	mov ah, [ebp+16]
+	imul edi, 160
+	add edi, 0xB8000
+	.loop:		     ;цикл вывода сообщения
+	lodsb			    ;считываем очередной символ строки
+	test al, al		    ;если встретили 0
+	jz   .exit		    ;прекращаем вывод
+	stosw
+	jmp  .loop
+	.exit:
+	pop eax, edi, esi
+	pop ebp
+	ret
 
 ; >>>> Data
 	elf_mag_ok: db "ELF magic number - OK", 0
