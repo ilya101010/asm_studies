@@ -30,10 +30,10 @@ macro pop [arg] { forward pop arg }
 macro ccall proc, [arg]
 {
 	common	argS = 0
-			pushad
+			; pushad - let the callee do it outside
 	reverse push arg
 			argS = argS + 4
 	common 	call proc
 	common 	add esp, argS
-			popad
+			; popad
 }

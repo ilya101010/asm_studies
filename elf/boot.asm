@@ -98,24 +98,6 @@ use32               ;32-битный код!!!
 
 public entry_pm
 
-macro print ; ah - color; esi - source; edi - line number
-{
-	push esi, edi, eax
-	imul edi, 160
-	add edi, 0xB8000
-	local .loop
-	local .exit
-	.loop:			     ;цикл вывода сообщения
-	lodsb			    ;считываем очередной символ строки
-	test al, al		    ;если встретили 0
-	jz   .exit		    ;прекращаем вывод
-	stosw
-	jmp  .loop
-	.exit:
-	pop eax, edi, esi
-	inc edi
-}
-
 align   10h         ;код должен выравниваться по границе 16 байт0
 entry_pm:
 	; >>> setting up all the basic stuff
@@ -131,65 +113,45 @@ entry_pm:
 	mov es, ax
 	
 	mbp
-	; >>> checking elf file
-	; >> magic number check
+	elf_mag_c: ; checking elf magic number
+		ccall elf_check_file, elf_load
+		xor eax, 0
+		push 0
+		jnz .ok
+		.error:
+			pop eax
+			ccall print, elf_mag_error+0x7C00, eax, red
+			inc eax
+			push eax
+			jmp .end
+		.ok:
+			pop eax
+			ccall print, elf_mag_ok+0x7C00, eax, green
+			inc eax
+			push eax
+		.end:
+	error_end:
+		pop eax
+		pushad
+		ccall print, error_str+0x7c00, eax, red
+		popad
+		mbp
+		jmp $
 
-	E ehdr elf_load
-
-	mov esi, E.e_ident.ei_mag
-	mov edi, elf_mag
-	add edi, 0x7C00
-	cmpsd
-	jnz not_elf
-	mbp
-	; > magic - OK !
-	ccall Print, elf_mag_ok+0x7c00, 0, green
-	; >> checking e_type
-	mov ax, [E.e_type]
-	mov bx, 0x0001
-	cmp ax, bx
-	mbp
-	jnz not_elf
-	ccall Print, elf_e_type_ok+0x7c00, 1, green
-	; looking for symtab (sh_type = 2)
-	mbp
-	s shdr eax
-	xor ecx, ecx
-	mov cx, [E.e_shnum]
-	xor eax, eax
-	mov eax, elf_load
-	add eax, [E.e_shoff]
-	.lp:
-		mov ebx, [s.sh_type]
-		cmp ebx, 2
-		jz symtab_found
-		xor edx, edx
-		mov dx, [E.e_shentsize]
-		add eax, edx
-	loop .lp
-	jmp not_elf
-	symtab_found:
-	ccall Print, elf_symtab_ok+0x7c00, 2, green
-	; s contains info about .symtab
-	mbp
-	mov ecx, [s.sh_size]
-	shr ecx, 4 ; sym_size=16; ebx = number of symbols
-	not_elf:
-	ccall Print, error_str+0x7c00, 24, red
-	mbp
-	jmp $
-
-; >>>> Procedures
-; Print(src,y,color)
-Print:
+; >>>> Procedures (optional cdecl or nodecl)
+; # output
+; write(src, x, y, color) // null-terminated string
+write:
 	push ebp
 	mov ebp, esp
 	push esi, edi, eax
 	mov esi, [ebp+8]
-	mov edi, [ebp+12]
-	mov ah, [ebp+16]
+	mov ah, [ebp+20]
+	mov edi, [ebp+16]
 	imul edi, 160
 	add edi, 0xB8000
+	add edi, [ebp+12]
+	add edi, [ebp+12]
 	.loop:		     ;цикл вывода сообщения
 	lodsb			    ;считываем очередной символ строки
 	test al, al		    ;если встретили 0
@@ -201,12 +163,52 @@ Print:
 	pop ebp
 	ret
 
-; >>>> Data
-	elf_mag_ok: db "ELF magic number - OK", 0
-	elf_e_type_ok: db "ELF e_type - relocatable - OK",0
-	elf_symtab_ok: db "ELF symtable - OK", 0
-	error_str: db "ERROR! entering infinite loop",0 
-	elf_mag: db 0x7f, 'E', 'L', 'F' ; ELF magic number
+
+; print(src,y,color) // null-terminated string
+print:
+	push ebp
+	mov ebp, esp
+	pusha
+	mov esi, [ebp+8]
+	mov edi, [ebp+12]
+	mov eax, [ebp+16]
+	ccall write, esi, 0, edi, eax
+	popa
+	pop ebp
+	ret
+
+
+
+; # ELF (see: http://wiki.osdev.org/ELF_Tutorial)
+; bool elf_check_file(*hdr)
+elf_check_file:
+	push ebp
+	mov ebp, esp
+	mov eax, [ebp+8]
+	.E ehdr eax
+	mov eax, [.E.e_ident.ei_mag]
+	mov ebx, 464c457fh ; magic number
+	xor eax, ebx
+	jnz .error
+	.ok:
+	mov eax, 1
+	jmp .exit
+	.error:
+	mov eax, 0
+	.exit:
+	pop ebp
+	ret
+
+
+; elf_check_supported()
+
+; >>>> errors
+elf_mag_ok: db "ELF magic number - OK", 0
+elf_mag_error: db "ELF magic number - ERROR", 0
+elf_e_type_ok: db "ELF e_type - relocatable - OK",0
+elf_symtab_ok: db "ELF symtable - OK", 0
+error_str: db "ERROR! entering infinite loop",0 
+; elf_mag: db 0x7f, 'E', 'L', 'F' ; ELF magic number
 
 ; >>>> Const
 
