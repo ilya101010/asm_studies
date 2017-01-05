@@ -129,6 +129,13 @@ entry_pm:
 			ccall print, elf_mag_ok+0x7C00, eax, green
 			inc eax
 			push eax
+			mov eax, 464c457fh
+			pushad
+			ccall itoah, eax, int_res+0x7c00
+			popad
+			pushad
+			ccall write, int_res+0x7c00, 24, 0, green
+			popad
 		.end:
 	error_end:
 		pop eax
@@ -139,6 +146,17 @@ entry_pm:
 		jmp $
 
 ; >>>> Procedures (optional cdecl or nodecl)
+
+demo_cdecl: ; referential example
+	push ebp
+	mov ebp, esp
+	; [ebp+8] - first arg
+	; [ebp+12] - second arg
+	; ...
+	; [ebp+4*(i+1)] - i-th arg
+	pop ebp
+	ret
+
 ; # output
 ; write(src, x, y, color) // null-terminated string
 write:
@@ -163,7 +181,6 @@ write:
 	pop ebp
 	ret
 
-
 ; print(src,y,color) // null-terminated string
 print:
 	push ebp
@@ -177,7 +194,113 @@ print:
 	pop ebp
 	ret
 
+; itoa(int n, char* s) // dec
+itoa:
+	push ebp
+	mov ebp, esp
+	mov eax, [ebp+8]
+	mov edi, [ebp+12]
+	mov ecx, 0
+	test eax, eax
+	jns .pos
+	neg eax
+	push 0
+	jmp .loop
+	.pos:
+	push 1
+	.loop:
+		mov ebx, 10
+		idiv ebx
+		push eax
+			xor eax, eax
+			mov al, '0'
+			add eax, edx
+			stosb
+			inc ecx
+		pop eax
+		xor eax, 0
+	jnz .loop
+	pop ebx
+	xor ebx, 0
+	jnz .reversing
+	mov al, '-'
+	stosb
+	inc ecx
+	.reversing: ; cx contains number of symbs
+	mbp
+	shr cx, 1
+	dec edi
+	mov esi, [ebp+12] ; left end of str
+	; edi contains right end of str
+	xor eax, eax
+	xor ebx, ebx
+	.loop1:
+		mov al, [esi]
+		mov bl, [edi]
+		xchg al, bl
+		mov [esi], al
+		mov [edi], bl
+		inc esi
+		dec edi
+	loop .loop1
+	pop ebp
+	ret
 
+; itoah(int n, char* s) // hex
+itoah:
+	push ebp
+	mov ebp, esp
+	mov eax, [ebp+8]
+	mov edi, [ebp+12]
+	mov ecx, 0
+	test eax, eax
+	jns .pos
+	neg eax
+	push 0
+	jmp .loop
+	.pos:
+	push 1
+	.loop:
+		mov edx, eax
+		and edx, 0xF
+		shr eax, 4
+		push eax
+			xor eax, eax
+			mov al, [.symb+0x7c00+edx]
+			stosb
+			inc ecx
+		pop eax
+		xor eax, 0
+	jnz .loop
+	pop ebx
+	xor ebx, 0
+	mov ax, 'x0'
+	stosw
+	add ecx, 2
+	jnz .reversing
+	mov al, '-'
+	stosb
+	inc ecx
+	.reversing: ; cx contains number of symbs
+	mbp
+	shr cx, 1
+	dec edi
+	mov esi, [ebp+12] ; left end of str
+	; edi contains right end of str
+	xor eax, eax
+	xor ebx, ebx
+	.loop1:
+		mov al, [esi]
+		mov bl, [edi]
+		xchg al, bl
+		mov [esi], al
+		mov [edi], bl
+		inc esi
+		dec edi
+	loop .loop1
+	pop ebp
+	ret
+	.symb: db '0123456789ABCDEF'
 
 ; # ELF (see: http://wiki.osdev.org/ELF_Tutorial)
 ; bool elf_check_file(*hdr)
@@ -203,17 +326,19 @@ elf_check_file:
 ; elf_check_supported()
 
 ; >>>> errors
-elf_mag_ok: db "ELF magic number - OK", 0
+elf_mag_ok: db "ELF magic number - OK - ", 0
 elf_mag_error: db "ELF magic number - ERROR", 0
 elf_e_type_ok: db "ELF e_type - relocatable - OK",0
 elf_symtab_ok: db "ELF symtable - OK", 0
 error_str: db "ERROR! entering infinite loop",0 
 ; elf_mag: db 0x7f, 'E', 'L', 'F' ; ELF magic number
 
+int_res: times 10 db 0
+
 ; >>>> Const
 
 ; >>> addresses (x86 elf)
-elf_load = 0x8000
+elf_load = 0x8400
 ; >> elf_header
 elf_type_off = 0x10
 elf_shoff_off = 0x20

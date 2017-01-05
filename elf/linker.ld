@@ -14,7 +14,7 @@ SECTIONS
 		SHORT(0xaa55);
 		boot.o(.text32);
 	}
-	. = 1023;
+	. = 2047;
 	.text32 : {
 		BYTE(0);
 	}
