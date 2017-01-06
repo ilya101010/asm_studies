@@ -118,6 +118,7 @@ entry_pm:
 		xor eax, 0
 		push 0
 		jnz .ok
+		mbp
 		.error:
 			pop eax
 			ccall print, elf_mag_error+0x7C00, eax, red
@@ -125,18 +126,36 @@ entry_pm:
 			push eax
 			jmp .end
 		.ok:
-			pop eax
-			ccall print, elf_mag_ok+0x7C00, eax, green
-			inc eax
-			push eax
 			mov eax, 464c457fh
 			pushad
-			ccall itoah, eax, int_res+0x7c00
+				push eax
+				ccall fill_zeros, int_res+0x7c00, 20
+				pop eax
+				ccall itoah, eax, int_res+0x7c00
 			popad
-			pushad
-			ccall write, int_res+0x7c00, 24, 0, green
-			popad
+			pop eax
+				ccall print, elf_mag_ok+0x7C00, eax, green
+				ccall write, int_res+0x7c00, 24, eax, green
+				inc eax
+			push eax
 		.end:
+	elf_header_scan:
+		.E ehdr elf_load
+		mbp
+		pop eax
+			xor ebx, ebx
+			mbp
+			mov bx, [.E.e_shnum]
+			pushad
+				mbp
+				ccall fill_zeros, int_res+0x7c00, 20
+				ccall itoa, ebx, int_res+0x7c00
+			popad
+			push eax
+				ccall print, int_res+0x7c00, eax, green
+			pop eax
+			inc eax
+		push eax
 	error_end:
 		pop eax
 		pushad
@@ -146,8 +165,8 @@ entry_pm:
 		jmp $
 
 ; >>>> Procedures (optional cdecl or nodecl)
-
-demo_cdecl: ; referential example
+; referential example
+demo_cdecl: 
 	push ebp
 	mov ebp, esp
 	; [ebp+8] - first arg
@@ -200,6 +219,9 @@ itoa:
 	mov ebp, esp
 	mov eax, [ebp+8]
 	mov edi, [ebp+12]
+	;pushad
+	;	ccall fill_zeros, edi, 20
+	;popad
 	mov ecx, 0
 	test eax, eax
 	jns .pos
@@ -229,6 +251,8 @@ itoa:
 	.reversing: ; cx contains number of symbs
 	mbp
 	shr cx, 1
+	test cx, cx
+	jz .end
 	dec edi
 	mov esi, [ebp+12] ; left end of str
 	; edi contains right end of str
@@ -243,6 +267,7 @@ itoa:
 		inc esi
 		dec edi
 	loop .loop1
+	.end:
 	pop ebp
 	ret
 
@@ -253,6 +278,9 @@ itoah:
 	mov eax, [ebp+8]
 	mov edi, [ebp+12]
 	mov ecx, 0
+	;pushad
+	;	ccall fill_zeros, edi, 20
+	;popad
 	test eax, eax
 	jns .pos
 	neg eax
@@ -302,6 +330,19 @@ itoah:
 	ret
 	.symb: db '0123456789ABCDEF'
 
+; fill_zeros(char*s, int n)
+fill_zeros:
+	push ebp
+	mov ebp, esp
+	mov edi, [ebp+8]
+	mov al, 0
+	xor ecx, ecx
+	mov cx, [ebp+12]
+	rep stosb
+	pop ebp
+	ret
+
+
 ; # ELF (see: http://wiki.osdev.org/ELF_Tutorial)
 ; bool elf_check_file(*hdr)
 elf_check_file:
@@ -325,15 +366,17 @@ elf_check_file:
 
 ; elf_check_supported()
 
-; >>>> errors
+; >>>> strings
 elf_mag_ok: db "ELF magic number - OK - ", 0
 elf_mag_error: db "ELF magic number - ERROR", 0
 elf_e_type_ok: db "ELF e_type - relocatable - OK",0
 elf_symtab_ok: db "ELF symtable - OK", 0
-error_str: db "ERROR! entering infinite loop",0 
+elf_secinfo_str: db "ELF section info:", 0
+elf_secinfo_2_str: db "num =         ; size =        ", 0
+error_str: db "ERROR! entering infinite loop",0
 ; elf_mag: db 0x7f, 'E', 'L', 'F' ; ELF magic number
 
-int_res: times 10 db 0
+int_res: times 20 db 0
 
 ; >>>> Const
 
