@@ -124,18 +124,10 @@ entry_pm:
 			ccall print, elf_mag_error+0x7C00, eax, red
 			inc eax
 			push eax
-			jmp .end
+			jmp error_end
 		.ok:
-			mov eax, 464c457fh
-			pushad
-				push eax
-				ccall fill_zeros, int_res+0x7c00, 20
-				pop eax
-				ccall itoah, eax, int_res+0x7c00
-			popad
 			pop eax
 				ccall print, elf_mag_ok+0x7C00, eax, green
-				ccall write, int_res+0x7c00, 24, eax, green
 				inc eax
 			push eax
 		.end:
@@ -143,16 +135,19 @@ entry_pm:
 		.E ehdr elf_load
 		mbp
 		pop eax
+			ccall print, elf_secinfo_str+0x7c00, eax, green
+			inc eax
 			xor ebx, ebx
 			mbp
 			mov bx, [.E.e_shnum]
-			pushad
-				mbp
-				ccall fill_zeros, int_res+0x7c00, 20
-				ccall itoa, ebx, int_res+0x7c00
-			popad
+			ccall itoa, ebx, elf_secinfo_2_str+0x7c00+6
+			mov bx, [.E.e_shentsize]
+			ccall itoah, ebx, elf_secinfo_2_str+0x7c00+22
 			push eax
-				ccall print, int_res+0x7c00, eax, green
+			mov ebx, [.E.e_shoff]
+			ccall itoah, ebx, elf_secinfo_2_str+0x7c00+40
+			push eax
+			ccall print, elf_secinfo_2_str+0x7c00, eax, green
 			pop eax
 			inc eax
 		push eax
@@ -367,12 +362,13 @@ elf_check_file:
 ; elf_check_supported()
 
 ; >>>> strings
-elf_mag_ok: db "ELF magic number - OK - ", 0
+elf_mag_ok: db "ELF magic number - OK", 0
 elf_mag_error: db "ELF magic number - ERROR", 0
 elf_e_type_ok: db "ELF e_type - relocatable - OK",0
 elf_symtab_ok: db "ELF symtable - OK", 0
-elf_secinfo_str: db "ELF section info:", 0
-elf_secinfo_2_str: db "num =         ; size =        ", 0
+elf_secinfo_str: db "ELF sections info:", 0
+elf_secinfo_2_str: db "num =        ; size =        ; offset =        ", 0
+elf_secinfo_3_str: db "phys. address =        "
 error_str: db "ERROR! entering infinite loop",0
 ; elf_mag: db 0x7f, 'E', 'L', 'F' ; ELF magic number
 

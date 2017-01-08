@@ -27,13 +27,32 @@ macro pop [arg] { forward pop arg }
 ; no proc macro - can't use local labels there
 ; TODO: do a yet another proc macro?
 
-macro ccall proc, [arg]
+macro ccall proc, [arg] ; result expected - don't touch eax
 {
 	common	argS = 0
-			; pushad - let the callee do it outside
+			; push all except eax
+			pushad
+			pushf
 	reverse push arg
 			argS = argS + 4
 	common 	call proc
 	common 	add esp, argS
+			popf
+			popad
+			; popad
+}
+
+macro ccallr proc, [arg]
+{
+	common	argS = 0
+			; push all except eax
+			push ecx, edx, ebx, ebp, esi, edi
+			pushf
+	reverse push arg
+			argS = argS + 4
+	common 	call proc
+	common 	add esp, argS
+			popf
+			popr ecx, edx, ebx, ebp, esi, edi
 			; popad
 }
