@@ -114,7 +114,7 @@ entry_pm:
 	
 	mbp
 	elf_mag_c: ; checking elf magic number
-		ccall elf_check_file, elf_load
+		ccallr elf_check_file, elf_load
 		xor eax, 0
 		push 0
 		jnz .ok
@@ -151,6 +151,42 @@ entry_pm:
 			pop eax
 			inc eax
 		push eax
+	elf_getting_shstrtab:
+		.E ehdr elf_load
+		xor esi, esi
+		xor ebx, ebx
+		mov si, [.E.e_shstrndx]
+		mov bx, [.E.e_shentsize]
+		imul esi, ebx
+		add esi, [.E.e_shoff]
+		add esi, elf_load
+		.shstrtab shdr esi
+		mov esi, [.shstrtab.sh_offset]
+		add esi, elf_load
+	elf_section_parse:
+		.E ehdr elf_load
+		xor ecx, ecx
+		mov cx, [.E.e_shnum]
+		xor edx, edx
+		mov edx, [.E.e_shoff]
+		add edx, elf_load
+		test ecx, ecx
+		jz .end
+		.section shdr edx
+		.lp:
+			pop eax
+			push esi
+				add esi, [.section.sh_name]
+				ccall print, esi, eax, green
+				inc eax
+			pop esi
+			push eax
+
+			xor eax, eax
+			mov ax, [.E.e_shentsize]
+			add edx, eax
+		loop .lp
+		.end:
 	error_end:
 		pop eax
 		pushad
@@ -368,7 +404,6 @@ elf_e_type_ok: db "ELF e_type - relocatable - OK",0
 elf_symtab_ok: db "ELF symtable - OK", 0
 elf_secinfo_str: db "ELF sections info:", 0
 elf_secinfo_2_str: db "num =        ; size =        ; offset =        ", 0
-elf_secinfo_3_str: db "phys. address =        "
 error_str: db "ERROR! entering infinite loop",0
 ; elf_mag: db 0x7f, 'E', 'L', 'F' ; ELF magic number
 
