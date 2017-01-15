@@ -1,0 +1,25 @@
+ºLF magic number - OK
+ELF e_type - relocatable - OK
+
+.text
+.shstrtab
+.symtab
+.strtab
+ERROR! entering infinite loop
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

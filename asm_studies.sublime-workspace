@@ -1,0 +1,839 @@
+{
+	"auto_complete":
+	{
+		"selected_items":
+		[
+			[
+				"elf_sec",
+				"elf_secinfo_str"
+			],
+			[
+				"elf_mag_ok",
+				"elf_mag_ok_len\tlabel"
+			],
+			[
+				"elf_mag",
+				"elf_mag_ok"
+			],
+			[
+				"elf_s",
+				"elf_symtab_ok\tlabel"
+			],
+			[
+				"elf_",
+				"elf_load\tlabel"
+			],
+			[
+				"elf",
+				"elf_load\tlabel"
+			],
+			[
+				"lod",
+				"lodsw \tLoad String"
+			],
+			[
+				"vga_",
+				"vga_width"
+			],
+			[
+				"vg",
+				"vga_width"
+			],
+			[
+				"idt_",
+				"idt_ptr"
+			],
+			[
+				"use",
+				"USE32"
+			],
+			[
+				"colo",
+				"color_0"
+			],
+			[
+				"sel",
+				"sel_code32\tlabel"
+			],
+			[
+				"se",
+				"sel_code32\tlabel"
+			],
+			[
+				"stae",
+				"state_str\tlabel"
+			],
+			[
+				"state",
+				"state_str\tlabel"
+			],
+			[
+				"lg",
+				"lgdt \tLoad Global/Interrupt Descriptor Table Register"
+			],
+			[
+				"put",
+				"put_hash\tlabel"
+			],
+			[
+				"pu",
+				"put_space\tlabel"
+			],
+			[
+				"clr",
+				"clr_str\tlabel"
+			],
+			[
+				"sh",
+				"shl \tShift"
+			],
+			[
+				"shi",
+				"shifd_string\tlabel"
+			],
+			[
+				"go",
+				"go_on0\tlabel"
+			],
+			[
+				"jz",
+				"jnz \tJump if Condition Is Met"
+			],
+			[
+				"st",
+				"strcpy\tlabel"
+			],
+			[
+				"ps",
+				"put_space\tlabel"
+			],
+			[
+				"c",
+				"clc \tClear Carry Flag"
+			],
+			[
+				"stos",
+				"stosw \tStore String"
+			],
+			[
+				"lods",
+				"lodsw \tLoad String"
+			],
+			[
+				"al",
+				"al_set_0\tlabel"
+			],
+			[
+				"als",
+				"al_set_0\tlabel"
+			],
+			[
+				"b",
+				"back\tlabel"
+			],
+			[
+				"pus",
+				"pusha \tPush All General"
+			],
+			[
+				"loo",
+				"loop \tLoop According to ECX Counter"
+			],
+			[
+				"loop",
+				"loopz \tLoop According to ECX Counter"
+			],
+			[
+				"ext",
+				"EXTERN"
+			],
+			[
+				"list-",
+				"list-style-type"
+			],
+			[
+				"i",
+				"id\tAttr"
+			],
+			[
+				"p",
+				"Pictures"
+			]
+		]
+	},
+	"buffers":
+	[
+		{
+			"file": "paging/paging.inc",
+			"settings":
+			{
+				"buffer_size": 6,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "format ELF\n\nsection '.text'",
+			"file": "paging/paging.asm",
+			"file_size": -1,
+			"file_write_time": -1,
+			"settings":
+			{
+				"buffer_size": 27,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"contents": "MEMORY\n{\n\tbootloader : org = 0x7C00, len = 1k\n\tbasic_kernel : org = 0x8000, len = 32k \n}\n\nOUTPUT_FORMAT(\"binary\")\nOUTPUT(\"final.img\")\nENTRY(start)\nphys = 0x7C00;\n\n\nSECTIONS\n{\n \t. = 0; /* */\n\t.boot {\n\t\tFILL(0);\n\t\tboot.o(.text16);\n\t\t. = 510;\n\t\tSHORT(0xaa55);\n\t\tboot.o(.text32);\n\t} > bootloader\n\n\t.bkernel :\n\t{\n\t\tprocedures.o(.text);\n\t}\n\n}",
+			"file": "paging/linker.ld",
+			"file_size": 351,
+			"file_write_time": 131288720142188623,
+			"settings":
+			{
+				"buffer_size": 336,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"settings":
+			{
+				"buffer_size": 0,
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "paging/boot.asm",
+			"settings":
+			{
+				"buffer_size": 2689,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "paging/procedures.asm",
+			"settings":
+			{
+				"buffer_size": 2700,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		},
+		{
+			"file": "paging/make.sh",
+			"settings":
+			{
+				"buffer_size": 191,
+				"encoding": "UTF-8",
+				"line_ending": "Unix"
+			}
+		}
+	],
+	"build_system": "",
+	"build_system_choices":
+	[
+		[
+			[
+				[
+					"Packages/NASM x86 Assembly/NASM.sublime-build",
+					""
+				],
+				[
+					"Packages/NASM x86 Assembly/NASM.sublime-build",
+					"Run"
+				]
+			],
+			[
+				"Packages/NASM x86 Assembly/NASM.sublime-build",
+				"Run"
+			]
+		]
+	],
+	"build_varint": "",
+	"command_palette":
+	{
+		"height": 392.0,
+		"last_filter": "",
+		"selected_items":
+		[
+			[
+				"Package Control: ",
+				"Package Control: Install Package"
+			]
+		],
+		"width": 485.0
+	},
+	"console":
+	{
+		"height": 160.0,
+		"history":
+		[
+			"import urllib.request,os,hashlib; h = 'df21e130d211cfc94d9b0905775a7c0f' + '1e3d39e33b79698005270310898eea76'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)",
+			"import urllib.request,os,hashlib; h = '2915d1851351e5ee549c20394736b442' + '8bc59f460fa1548d1514676163dafc88'; pf = 'Package Control.sublime-package'; ipp = sublime.installed_packages_path(); urllib.request.install_opener( urllib.request.build_opener( urllib.request.ProxyHandler()) ); by = urllib.request.urlopen( 'http://packagecontrol.io/' + pf.replace(' ', '%20')).read(); dh = hashlib.sha256(by).hexdigest(); print('Error validating download (got %s instead of %s), please try manual install' % (dh, h)) if dh != h else open(os.path.join( ipp, pf), 'wb' ).write(by)"
+		]
+	},
+	"distraction_free":
+	{
+		"menu_visible": true,
+		"show_minimap": false,
+		"show_open_files": false,
+		"show_tabs": false,
+		"side_bar_visible": false,
+		"status_bar_visible": false
+	},
+	"file_history":
+	[
+		"/home/ilya101010/DIPLOMA/asm_studies/elf/kernel/make.sh",
+		"/home/ilya101010/DIPLOMA/asm_studies/elf/make.sh",
+		"/home/ilya101010/DIPLOMA/asm_studies/elf/kernel/test.c",
+		"/home/ilya101010/DIPLOMA/asm_studies/elf/kernel/linker.ld",
+		"/home/ilya101010/DIPLOMA/asm_studies/elf/kernel/test.asm",
+		"/home/ilya101010/DIPLOMA/asm_studies/elf/kernel/main.asm",
+		"/home/ilya101010/DIPLOMA/asm_studies/elf/macro.inc",
+		"/home/ilya101010/DIPLOMA/asm_studies/elf/elf.inc",
+		"/home/ilya101010/DIPLOMA/asm_studies/elf/linker.ld",
+		"/home/ilya101010/devel/asm_studies/elf/boot.asm",
+		"/home/ilya101010/devel/asm_studies/paging/linux.asm",
+		"/home/ilya101010/DIPLOMA/PROC16.INC",
+		"/home/ilya101010/devel/asm_studies/elf/boot.",
+		"/home/ilya101010/devel/asm_studies/elf/kernel.asm",
+		"/home/ilya101010/devel/asm_studies/.gitignore",
+		"/home/ilya101010/devel/asm_studies/elf/test.c",
+		"/home/ilya101010/devel/asm_studies/elf/linker.ld",
+		"/home/ilya101010/devel/asm_studies/linking/kernel.c",
+		"/home/ilya101010/devel/asm_studies/elf/nasm/test.asm",
+		"/home/ilya101010/devel/asm_studies/elf/gas/boot.s",
+		"/home/ilya101010/devel/asm_studies/idt/make.sh",
+		"/home/ilya101010/devel/asm_studies/elf/boot.s",
+		"/home/ilya101010/devel/asm_studies/idt/bx_enh_dbg.ini",
+		"/home/ilya101010/devel/asm_studies/vga/kernel.c",
+		"/home/ilya101010/devel/asm_studies/elf/make.sh",
+		"/home/ilya101010/.config/awesome/rc.lua",
+		"/home/ilya101010/.Xresources",
+		"/home/ilya101010/devel/asm_studies/idt/boot.",
+		"/home/ilya101010/devel/asm_studies/linux_linking/b.asm",
+		"/home/ilya101010/dl/start.asm",
+		"/home/ilya101010/dl/isrs.c",
+		"/home/ilya101010/devel/asm_studies/idt/idt.c",
+		"/home/ilya101010/devel/asm_studies/idt/irq.asm",
+		"/home/ilya101010/devel/asm_studies/idt/system.cpp",
+		"/home/ilya101010/devel/asm_studies/idt/system.h",
+		"/home/ilya101010/devel/asm_studies/vga_text/snapshot.bmp",
+		"/home/ilya101010/devel/asm_studies/vga_text/kernel.c",
+		"/home/ilya101010/devel/asm_studies/vga/b.asm",
+		"/home/ilya101010/devel/asm_studies/vga/boot.asm",
+		"/home/ilya101010/devel/asm_studies/linux_linking/linker.ld",
+		"/home/ilya101010/devel/asm_studies/vga/linker.ld",
+		"/home/ilya101010/devel/asm_studies/vga/make.sh",
+		"/home/ilya101010/devel/asm_studies/linux_linking/c.c",
+		"/home/ilya101010/devel/asm_studies/vga/b.o",
+		"/home/ilya101010/devel/asm_studies/vga/a.asm",
+		"/home/ilya101010/devel/asm_studies/linking/make.sh",
+		"/home/ilya101010/devel/asm_studies/linux_linking/make.sh",
+		"/home/ilya101010/devel/asm_studies/vga/.bochsrc",
+		"/home/ilya101010/devel/asm_studies/linux_linking/a.asm",
+		"/home/ilya101010/devel/asm_studies/linking/linker.ld",
+		"/home/ilya101010/devel/asm_studies/linking/boot.asm",
+		"/home/ilya101010/devel/lomonosov/5/words_i.txt",
+		"/home/ilya101010/devel/lomonosov/5/words.txt",
+		"/home/ilya101010/devel/lomonosov/5/main.cpp",
+		"/home/ilya101010/devel/lomonosov/5/google-10000-english.txt",
+		"/home/ilya101010/devel/asm_studies/linking_real_mode/make.sh",
+		"/home/ilya101010/devel/asm_studies/cellular_automata/cellular.asm",
+		"/home/ilya101010/devel/asm_studies/linking_real_mode/boot.asm",
+		"/home/ilya101010/devel/asm_studies/linking_real_mode/.bochsrc",
+		"/home/ilya101010/devel/asm_studies/linking/.bochsrc",
+		"/home/ilya101010/devel/asm_studies/cellular_automata/.bochsrc",
+		"/tmp/packerbuild-1000/bochs-gdb/bochs-gdb/PKGBUILD",
+		"/home/ilya101010/devel/asm_studies/linking/tmp.s",
+		"/home/ilya101010/devel/asm_studies/linking/mmu.h",
+		"/home/ilya101010/devel/asm_studies/gdt/boot.asm",
+		"/home/ilya101010/dl/boot.asm",
+		"/home/ilya101010/devel/asm_studies/linking_real_mode/a.asm",
+		"/home/ilya101010/dl/cellular (3).asm",
+		"/home/ilya101010/devel/asm_studies/cellular_automata/cellular_1.asm",
+		"/home/ilya101010/devel/asm_studies/linux_linking/a.c",
+		"/home/ilya101010/dl/msvc/asm.asm",
+		"/home/ilya101010/devel/asm/linux_linking/a.c",
+		"/home/ilya101010/dl/msvc/c.c",
+		"/home/ilya101010/devel/asm_studies/.git/MERGE_MSG",
+		"/home/ilya101010/devel/asm/linux_linking/a.asm",
+		"/home/ilya101010/devel/asm/linux_linking/linker.ld",
+		"/home/ilya101010/devel/asm/linux_c/test.asm",
+		"/home/ilya101010/devel/asm/linux_c/abi.asm",
+		"/home/ilya101010/dev",
+		"/home/ilya101010/dl/debug.asm",
+		"/home/ilya101010/devel/asm/linking/make.sh",
+		"/home/ilya101010/devel/asm/linking/linker.ld",
+		"/home/ilya101010/devel/asm/linking/pm.asm",
+		"/home/ilya101010/devel/asm/linking/Make.sh",
+		"/home/ilya101010/devel/asm/linking/boot2.asm",
+		"/home/ilya101010/devel/asm/cellular_automata/cellular.asm",
+		"/home/ilya101010/devel/asm/linking/boot.asm",
+		"/home/ilya101010/.config/sublime-text-3/Packages/User/Preferences.sublime-settings",
+		"/home/ilya101010/doc/diploma/vision.tex",
+		"/home/ilya101010/devel/asm/linking/b2.asm",
+		"/home/ilya101010/devel/asm/babysteps/cellular.asm",
+		"/home/ilya101010/.config/termite/config",
+		"/home/ilya101010/devel/asm/dos/cellular.asm",
+		"/home/ilya101010/devel/asm/gdt/boot.asm",
+		"/home/ilya101010/tmp/config",
+		"/tmp/packerbuild-1000/lemonbuddy/lemonbuddy/PKGBUILD",
+		"/home/ilya101010/dl/sadko/syscall2.html",
+		"/home/ilya101010/devel/asm/bran_kernel/boot.asm",
+		"/home/ilya101010/devel/asm/cellular_automata/cellular_1.asm",
+		"/home/ilya101010/devel/asm/cellular_automata/proc16.inc",
+		"/home/ilya101010/dl/one (1).asm",
+		"/home/ilya101010/devel/asm/linux_c/cell.asm",
+		"/home/ilya101010/devel/asm/cellular_automata/test.cpp",
+		"/home/ilya101010/devel/asm/cellular_automata/kernel.cpp",
+		"/home/ilya101010/devel/asm/babysteps/one.asm",
+		"/home/ilya101010/devel/asm/babysteps/fuck.asm",
+		"/home/ilya101010/devel/asm/babysteps/worked.asm",
+		"/home/ilya101010/devel/asm/babysteps/old.asm",
+		"/tmp/packerbuild-1000/skype/skype/PKGBUILD",
+		"/home/ilya101010/devel/asm/babysteps/one.bin",
+		"/home/ilya101010/devel/asm/babysteps/one.",
+		"/home/ilya101010/dl/one.asm",
+		"/home/ilya101010/dl/one",
+		"/home/ilya101010/devel/asm/babysteps/print.inc",
+		"/tmp/packerbuild-1000/fasm/fasm/PKGBUILD",
+		"/tmp/packerbuild-1000/otter-browser/otter-browser/PKGBUILD",
+		"/home/ilya101010/devel/vk_analysis/scan.py",
+		"/home/ilya101010/devel/Mathematica/vk.py",
+		"/home/ilya101010/.config/awesome/theme/theme.lua",
+		"/tmp/packerbuild-1000/visual-studio-code/visual-studio-code/PKGBUILD",
+		"/home/ilya101010/devel/vk_scan/vk.gexf",
+		"/home/ilya101010/Documents/kern2a/_layouts/default.html",
+		"/home/ilya101010/Documents/blog/_posts/2016-08-01-Test.md",
+		"/home/ilya101010/Documents/blog/_config.yml",
+		"/home/ilya101010/Documents/blog/assets/core.scss",
+		"/home/ilya101010/Documents/blog/_layouts/post.html",
+		"/home/ilya101010/Documents/kern2a/_posts/2016-08-01-welcome-to-jekyll.markdown",
+		"/home/ilya101010/devel/firefox/homepage/index.html"
+	],
+	"find":
+	{
+		"height": 23.0
+	},
+	"find_in_files":
+	{
+		"height": 96.0,
+		"where_history":
+		[
+			""
+		]
+	},
+	"find_state":
+	{
+		"case_sensitive": false,
+		"find_history":
+		[
+			"match",
+			"(unsigned)",
+			"_isr",
+			"push byte",
+			"global",
+			"size_t",
+			"aa",
+			",",
+			"c*",
+			"\\n",
+			"k_main",
+			"extrn",
+			"section",
+			"k_main",
+			"bx",
+			"xor ax,",
+			"clrscr",
+			"10h",
+			"mov di",
+			"rm",
+			"rm_seg",
+			";=====================================================",
+			"lgdt",
+			"теперь",
+			"bx",
+			"pushf",
+			"ps",
+			"b800",
+			"shift_string",
+			"jmp bk1",
+			"bk1",
+			"newst",
+			"rest",
+			"\t\n",
+			"and",
+			"        ",
+			"hash",
+			"ph",
+			"mov ",
+			"long int",
+			"t",
+			"sin",
+			"million",
+			"height",
+			"center",
+			"wallpaper",
+			"panel",
+			"Panel-ui",
+			"Panel",
+			"web",
+			"misc",
+			"web",
+			"main",
+			"в",
+			"ы",
+			"_",
+			" ",
+			"h",
+			"!",
+			"`",
+			"_",
+			".",
+			"11",
+			"10",
+			"9",
+			"8",
+			"7",
+			"."
+		],
+		"highlight": true,
+		"in_selection": false,
+		"preserve_case": false,
+		"regex": false,
+		"replace_history":
+		[
+			"&&",
+			"*",
+			"isr",
+			"push",
+			"public",
+			"\",\"",
+			",",
+			"segment",
+			"\\t",
+			"long long unsigned",
+			"x",
+			"cos",
+			"",
+			" ",
+			".",
+			"_",
+			"h ",
+			"! ",
+			"h",
+			"`",
+			"_",
+			"#",
+			"_11",
+			"_10",
+			"_9",
+			"_8",
+			"_7",
+			"_"
+		],
+		"reverse": false,
+		"show_context": true,
+		"use_buffer2": true,
+		"whole_word": false,
+		"wrap": false
+	},
+	"groups":
+	[
+		{
+			"selected": 3,
+			"sheets":
+			[
+				{
+					"buffer": 0,
+					"file": "paging/paging.inc",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 6,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/HTML/HTML.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 4,
+					"type": "text"
+				},
+				{
+					"buffer": 1,
+					"file": "paging/paging.asm",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 27,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								26,
+								26
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/FASM x86/Syntaxes/Assembly x86 Intel.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 5,
+					"type": "text"
+				},
+				{
+					"buffer": 2,
+					"file": "paging/linker.ld",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 336,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								198,
+								198
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 1,
+					"type": "text"
+				},
+				{
+					"buffer": 3,
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 0,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								0,
+								0
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/Text/Plain text.tmLanguage"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 0,
+					"type": "text"
+				},
+				{
+					"buffer": 4,
+					"file": "paging/boot.asm",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2689,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								1910,
+								1910
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/FASM x86/Syntaxes/Assembly x86 Intel.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 1123.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 2,
+					"type": "text"
+				},
+				{
+					"buffer": 5,
+					"file": "paging/procedures.asm",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 2700,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								107,
+								107
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/FASM x86/Syntaxes/Assembly x86 Intel.tmLanguage",
+							"translate_tabs_to_spaces": false
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 3,
+					"type": "text"
+				},
+				{
+					"buffer": 6,
+					"file": "paging/make.sh",
+					"semi_transient": false,
+					"settings":
+					{
+						"buffer_size": 191,
+						"regions":
+						{
+						},
+						"selection":
+						[
+							[
+								175,
+								175
+							]
+						],
+						"settings":
+						{
+							"syntax": "Packages/ShellScript/Shell-Unix-Generic.sublime-syntax"
+						},
+						"translation.x": 0.0,
+						"translation.y": 0.0,
+						"zoom_level": 1.0
+					},
+					"stack_index": 6,
+					"type": "text"
+				}
+			]
+		}
+	],
+	"incremental_find":
+	{
+		"height": 23.0
+	},
+	"input":
+	{
+		"height": 34.0
+	},
+	"layout":
+	{
+		"cells":
+		[
+			[
+				0,
+				0,
+				1,
+				1
+			]
+		],
+		"cols":
+		[
+			0.0,
+			1.0
+		],
+		"rows":
+		[
+			0.0,
+			1.0
+		]
+	},
+	"menu_visible": true,
+	"output.assembly_documentation":
+	{
+		"height": 430.0
+	},
+	"output.exec":
+	{
+		"height": 130.0
+	},
+	"output.find_results":
+	{
+		"height": 0.0
+	},
+	"pinned_build_system": "Packages/NASM x86 Assembly/NASM.sublime-build",
+	"project": "asm_studies.sublime-project",
+	"replace":
+	{
+		"height": 42.0
+	},
+	"save_all_on_build": true,
+	"select_file":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_project":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"select_symbol":
+	{
+		"height": 0.0,
+		"last_filter": "",
+		"selected_items":
+		[
+		],
+		"width": 0.0
+	},
+	"selected_group": 0,
+	"settings":
+	{
+	},
+	"show_minimap": true,
+	"show_open_files": false,
+	"show_tabs": true,
+	"side_bar_visible": true,
+	"side_bar_width": 150.0,
+	"status_bar_visible": true,
+	"template_settings":
+	{
+	}
+}

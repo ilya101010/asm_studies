@@ -60,3 +60,17 @@ struc sym i
 }
 
 sym_size = 16
+
+; >>> Program header
+
+struc program i
+{
+	virtual at i
+		.p_type dw ?
+		.p_offset dw ?
+		.p_vaddr dw ?
+		.p_paddr
+	end virtual
+}
+
+phdr_size = 32

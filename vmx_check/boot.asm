@@ -1,7 +1,8 @@
 format ELF
 
 include 'macro.inc'
-include 'paging.inc'
+include 'elf.inc'
+; include 'proc32.inc' - these macros are SICK and TIRED of your damn EMAILS!
 
 ; >>>> 16bit code
 
@@ -11,6 +12,7 @@ Use16
 
 public start
 start:
+	org     0x7C00
 	mbp
 
 	cli		     ; disabling interrupts
@@ -90,17 +92,13 @@ g_base:     dd  GDTTable           ;адрес таблицы GDT
 
 ; >>>> 32bit code
 
-section '.text32' executable align 100h
+section '.text32' executable align 10h
 ; org     0x7E00
 use32               ;32-битный код!!!
 
 public entry_pm
-extrn kernel_setup
 
-
-
-align   10h         ;код должен выравниваться по границе 16 байт
-include 'procedures.inc'
+align   10h         ;код должен выравниваться по границе 16 байт0
 entry_pm:
 	; >>> setting up all the basic stuff
 	cli		     ; disabling interrupts
@@ -113,15 +111,108 @@ entry_pm:
 	mov ax, sel_data
 	mov ds, ax
 	mov es, ax
-	ccall print, string, 0, green
+	
+	mbp
+	; >>> checking elf file
+	; >> magic number check
 
-init_paging:
-zeend:
+	E ehdr elf_load
+
+	mov esi, E.e_ident.ei_mag
+	mov edi, elf_mag
+	add edi, 0x7C00
+	cmpsd
+	jnz not_elf
+	mbp
+	; > magic - OK !
+	ccall print, elf_mag_ok+0x7c00, 0, green
+	; >> checking e_type
+	mov ax, [E.e_type]
+	mov bx, 0x0001
+	cmp ax, bx
+	mbp
+	jnz not_elf
+	ccall print, elf_e_type_ok+0x7c00, 1, green
+	; looking for symtab (sh_type = 2)
+	mbp
+	s shdr eax
+	xor ecx, ecx
+	mov cx, [E.e_shnum]
+	xor eax, eax
+	mov eax, elf_load
+	add eax, [E.e_shoff]
+	.lp:
+		mov ebx, [s.sh_type]
+		cmp ebx, 2
+		jz symtab_found
+		xor edx, edx
+		mov dx, [E.e_shentsize]
+		add eax, edx
+	loop .lp
+	jmp not_elf
+	symtab_found:
+	ccall print, elf_symtab_ok+0x7c00, 2, green
+	; s contains info about .symtab
+	mbp
+	mov ecx, [s.sh_size]
+	shr ecx, 4 ; sym_size=16; ebx = number of symbols
+	mov esi, [s.sh_offset]
+	add esi, 0x7c00
+	sm sym esi
+	not_elf:
+	ccall print, error_str+0x7c00, 24, red
+	mbp
 	jmp $
 
+; >>>> Procedures (optional cdecl or nodecl)
+; # output
+; print(src,y,color) // null-terminated string
+print:
+	push ebp
+	mov ebp, esp
+	push esi, edi, eax
+	mov esi, [ebp+8]
+	mov edi, [ebp+12]
+	mov ah, [ebp+16]
+	imul edi, 160
+	add edi, 0xB8000
+	.loop:		     ;цикл вывода сообщения
+	lodsb			    ;считываем очередной символ строки
+	test al, al		    ;если встретили 0
+	jz   .exit		    ;прекращаем вывод
+	stosw
+	jmp  .loop
+	.exit:
+	pop eax, edi, esi
+	pop ebp
+	ret
+
+; write(src) - TODO
+
+
+; # ELF
+; symbol table ops
+
+; get_section
+
 ; >>>> Data
-	
-string db "hello world",0
+	elf_mag_ok: db "ELF magic number - OK", 0
+	elf_e_type_ok: db "ELF e_type - relocatable - OK",0
+	elf_symtab_ok: db "ELF symtable - OK", 0
+	error_str: db "ERROR! entering infinite loop",0 
+	elf_mag: db 0x7f, 'E', 'L', 'F' ; ELF magic number
+
+; >>>> Const
+
+; >>> addresses (x86 elf)
+elf_load = 0x8000
+; >> elf_header
+elf_type_off = 0x10
+elf_shoff_off = 0x20
+elf_shentsize_off = 0x2E
+elf_shnum_off = 0x30
+elf_shstrndx_off = 0x32
+
 
 ; >>> селекторы дескрипторов (RPL=0, TI=0)
 sel_zero    =   0000000b
@@ -132,7 +223,7 @@ sel_data  	=   0010000b
 green = 0x0A
 red = 0x04
 
-; Here goes C flat binary?
+	; Here goes C flat binary?
 
 ; >>> boot sector signature
 ;finish:
