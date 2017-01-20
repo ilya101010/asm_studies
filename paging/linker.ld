@@ -1,13 +1,13 @@
 MEMORY
 {
 	bootloader : org = 0x7C00, len = 1k
-	basic_kernel : org = 0x9000, len = 32k 
+	basic_kernel : org = 0x8000, len = 8k
+
 }
 
 OUTPUT_FORMAT("binary")
 OUTPUT("final.img")
 ENTRY(start)
-
 
 SECTIONS
 {
@@ -23,6 +23,8 @@ SECTIONS
 	.bkernel :
 	{
 		procedures.o(.text);
+		paging.o(.text)
 	} > basic_kernel
 
+	/* 0x10000 - start of paging structures */
 }

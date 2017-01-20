@@ -7,8 +7,6 @@ include 'macro.inc'
 section '.text' executable
 Use32
 
-org 0x9000
-
 demo_cdecl: 
 	push ebp
 	mov ebp, esp
