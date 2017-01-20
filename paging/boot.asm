@@ -117,6 +117,7 @@ entry_pm:
 
 init_paging:
 zeend:
+	call kernel_setup
 	jmp $
 
 ; >>>> Data

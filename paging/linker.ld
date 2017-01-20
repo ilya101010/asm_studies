@@ -1,8 +1,7 @@
 MEMORY
 {
-	bootloader : org = 0x7C00, len = 1k
+	bootloader : org = 0x7c00, len = 1k
 	basic_kernel : org = 0x8000, len = 8k
-
 }
 
 OUTPUT_FORMAT("binary")
@@ -23,8 +22,9 @@ SECTIONS
 	.bkernel :
 	{
 		procedures.o(.text);
-		paging.o(.text)
+		kernel_setup.o(.text);
+		paging.o(.text);
 	} > basic_kernel
 
-	/* 0x10000 - start of paging structures */
+	/* 0xA000 - start of paging structures */
 }
