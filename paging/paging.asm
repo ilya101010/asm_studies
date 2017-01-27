@@ -15,6 +15,14 @@ pd_num = 1024
 ; [pde, pde+0x1000] - PDE 1
 ; [pde+0x1000+1+(i-1)]
 
+macro set_entry dst, src, flags
+{
+	mov eax, src
+	and eax, 0xFFFFF000
+	or eax, flags
+	mov [dst], eax
+}
+
 init_paging:
 	mbp
 .clean:
@@ -24,10 +32,8 @@ init_paging:
 	mov edi, PD
 	mov ecx, 1024
 	.lp1:
-		mov eax, PT
-		and eax, 0xFFFFF000 ; align
-		or eax, 000000000011b
-		stosd
+		set_entry edi, PT, 000000000011b
+		add edi, 4
 	loop .lp1
 .pe_set:
 	mov edi, PT
