@@ -190,3 +190,27 @@ fill_zeros:
 	rep stosb
 	pop ebp
 	ret
+
+public hex_f
+; a hell of yet another itoa-s
+; abcdefgh - format idea (8 hex digits)
+; hex_f(int n, char* s) // hex
+hex_f:
+	push ebp
+	mov ebp, esp
+	mov edx, [ebp+8]
+	mov edi, [ebp+12]
+	add edi, 7
+	std
+	mbp
+	repeat 8
+		mov eax, edx
+		and eax, 0xF
+		mov al, [.symbt+eax]
+		shr edx, 4
+		stosb
+	end repeat
+	cld
+	pop ebp
+	ret
+	.symbt: db '0123456789ABCDEF'

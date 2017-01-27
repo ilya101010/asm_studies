@@ -115,16 +115,6 @@ use32               ;32-битный код!!!
 public entry_pm
 extrn kernel_setup
 
-macro mmap_entry
-{
-	.base_low dd ?
-	.base_high dd ?
-	.len_low dd ?
-	.len_high dd ?
-	.len_type dd ?
-}
-
-
 align   10h         ;код должен выравниваться по границе 16 байт
 include 'procedures.inc'
 entry_pm:
@@ -145,19 +135,45 @@ entry_pm:
 memory_map_out:
 	mov ebp, 1
 	mov esi, 0xA000
-	mov ecx, 10
-	.lp:
+	mov ecx, 20 ; why? don't ask questions like this
+	.lp3:
 	push ebp, ecx
-		ccall print, addr, ebp, green
+		jmp memory_map_out_r
+		.back:	
 	popr ebp, ecx
 	inc ebp
-	loop .lp
+	loop .lp3
+
 	jmp $
+
+memory_map_out_r:
+	virtual at esi
+		.base_low dd ?
+		.base_high dd ?
+		.len_low dd ?
+		.len_high dd ?
+		.type dd ?
+	end virtual
+	mov eax,[.base_high]
+	ccall hex_f, eax, map_s+4
+	mov eax,[.base_low]
+	ccall hex_f, eax, map_s+12
+	mov eax,[.len_high]
+	ccall hex_f, eax, map_s+26
+	mov eax,[.len_low]
+	ccall hex_f, eax, map_s+34
+	mov eax,[.type]
+	ccall hex_f, eax, map_s+48
+	ccall print, map_s, ebp, green
+	inc ebp
+	add esi, 20
+	jmp memory_map_out.back
 
 ; >>>> Data
 	
 string db "hello world",0
-addr: times 16 db 0
+map_s db "A : 0000000000000000, L = 0000000000000000, T = 00000000",0
+addr: times 20 db 0
 ; >>> селекторы дескрипторов (RPL=0, TI=0)
 sel_zero    =   0000000b
 sel_code32  =   0001000b
