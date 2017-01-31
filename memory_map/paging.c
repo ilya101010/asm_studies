@@ -1,12 +1,41 @@
 extern void print(char* src, int y, int color);
 extern void hex_f(int n, char *s);
 
+struct mmap_entry
+{
+	int base_low;
+	int base_high;
+	int length_low;
+	int length_high;
+	int type;
+};
+
+// \xC9 - ╔ \xCB - ╦ \xCD - ═ \xBB - ╗
+
+// \xBA - ║ \xCC - ╠ \xCE - ╬ \xB9 - ╣
+
+// \xC8 = ╚ \xBC - ╝ \xCA - ╩
+
 void demo()
 {
-	static char* string = "";
-	for(int i = 0; i<25; i++)
+	static char* strs[] = {	"\xC9\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCB\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCB\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBB",
+							"\xBA  Type  \xBA  Base address  \xBA     Length     \xBA",
+							"\xCC\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCE\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCE\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB9",
+							"\xC8\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCA\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCA\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBC"};
+	for(int i = 0; i<3; i++)
+		print(strs[i],i,0x1b);
+	volatile struct mmap_entry* region = (volatile struct mmap_entry*)(0xA000);
+	int i = 0;
+	while(region->type != 0)
 	{
-		hex_f(i,string);
-		print(string, i, 0x0a);
+		hex_f(region->type,strs[1]+1);
+		hex_f(region->base_high,strs[1]+10);
+		hex_f(region->base_low,strs[1]+18);
+		hex_f(region->length_high,strs[1]+27);
+		hex_f(region->length_low,strs[1]+35);
+		print(strs[1],i+3,0x1b);
+		*region++; // is actually +20 bytes (!)
+		i++;
 	}
+	print(strs[3],i+3,0x1b);
 }

@@ -126,39 +126,6 @@ entry_pm:
 	mov ax, sel_data
 	mov ds, ax
 	mov es, ax
-
-	Print string, 0, 0x0A
-
-memory_map_out:
-	mov ebp, 0
-	mov esi, 0xA000
-	mov ecx, 20 ; why? don't ask questions like this
-	.lp3:
-		push ebp, ecx
-			virtual at esi
-				.base_low dd ?
-				.base_high dd ?
-				.len_low dd ?
-				.len_high dd ?
-				.type dd ?
-			end virtual
-			mbp
-			Hex_f [.base_high], map_s+4
-			Hex_f [.base_low], map_s+12
-			Hex_f [.len_high], map_s+26
-			Hex_f [.len_low], map_s+34
-			Hex_f [.type], map_s+48
-			Print map_s, ebp, green
-			inc ebp
-			add esi, 20
-			mov eax, [.type]
-		popr ebp, ecx
-		inc ebp
-		test eax, eax
-		jz .exit
-	jmp .lp3
-	.exit:
-_end:
 	call demo
 	jmp $
 ; >>>> Data
