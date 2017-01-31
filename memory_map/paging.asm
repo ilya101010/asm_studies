@@ -26,8 +26,8 @@ macro set_entry dst, src, flags
 init_paging:
 	mbp
 .clean:
-	fill_zeros PD, 0x1000
-	fill_zeros PT, 2*0x1000
+	Fill_zeros PD, 0x1000
+	Fill_zeros PT, 2*0x1000
 .pd_set:
 	mov edi, PD
 	mov ecx, 1024
@@ -60,7 +60,7 @@ init_paging:
 
 	mbp
 
-	print paging, 2, 0x0a
+	Print paging, 2, 0x0a
 
 	jmp $
 
@@ -74,7 +74,7 @@ setup_table: ; eax - # of table in PD, bh - flags, edx - address
 	ret	
 
 setup:
-	ccall fill_zeros, PD, 0x1000
+	Fill_zeros PD, 0x1000
 
 PD = pd_add
 PT = pd_add+pd_num*pd_size

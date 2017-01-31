@@ -110,7 +110,6 @@ section '.text32' executable align 100h
 use32               ;32-битный код!!!
 
 public entry_pm
-extrn kernel_setup
 extrn demo
 
 align   10h         ;код должен выравниваться по границе 16 байт
@@ -127,14 +126,11 @@ entry_pm:
 	mov ax, sel_data
 	mov ds, ax
 	mov es, ax
-	ccall itoah, 0xdead, addr
-	mbp
-	mov esi, addr
-	mov ebx, 0
-	mov edx, green
-	call print
+
+	Print string, 0, 0x0A
+
 memory_map_out:
-	mov ebp, 1
+	mov ebp, 0
 	mov esi, 0xA000
 	mov ecx, 20 ; why? don't ask questions like this
 	.lp3:
@@ -147,12 +143,12 @@ memory_map_out:
 				.type dd ?
 			end virtual
 			mbp
-			hex_f [.base_high], map_s+4
-			hex_f [.base_low], map_s+12
-			hex_f [.len_high], map_s+26
-			hex_f [.len_low], map_s+34
-			hex_f [.type], map_s+48
-			print map_s, ebp, green
+			Hex_f [.base_high], map_s+4
+			Hex_f [.base_low], map_s+12
+			Hex_f [.len_high], map_s+26
+			Hex_f [.len_low], map_s+34
+			Hex_f [.type], map_s+48
+			Print map_s, ebp, green
 			inc ebp
 			add esi, 20
 			mov eax, [.type]
