@@ -8,7 +8,7 @@ use32
 
 public init_paging
 
-pd_add = 0xA000
+pd_add = 0xB000
 pd_size = 4
 pd_num = 1024
 

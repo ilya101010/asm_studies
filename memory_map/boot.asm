@@ -1,7 +1,6 @@
 format ELF
 
 include 'macro.inc'
-include 'paging.inc'
 
 ; >>>> 16bit code
 
@@ -12,8 +11,6 @@ org 0x7c00 ; why?! loop problems
 
 public start
 start:
-	mbp
-
 	cli		     ; disabling interrupts
 	mov     ax, cs	  ; segment registers' init
 	mov     ds, ax
@@ -85,7 +82,7 @@ memory_map:
 	mov eax,cr0
 	or  al,1     
 	mov cr0,eax
-	
+	mbp
 	; O32 jmp far
 	db  66h ; O32
 	db  0eah ; JMP FAR
@@ -121,7 +118,7 @@ entry_pm:
 	; >>> setting up all the basic stuff
 	cli		     ; disabling interrupts
 	; cs already defined
-	
+	mbp
 	mov ax, sel_data
 	mov ss, ax
 	mov     esp, 0x7C00
@@ -129,57 +126,43 @@ entry_pm:
 	mov ax, sel_data
 	mov ds, ax
 	mov es, ax
-	ccall itoah, 0xdead, addr+1
-	ccall print, addr+1, 0, green
-
+	ccall itoah, 0xdead, addr
+	mbp
+	mov esi, addr
+	mov ebx, 0
+	mov edx, green
+	call print
 memory_map_out:
 	mov ebp, 1
 	mov esi, 0xA000
 	mov ecx, 20 ; why? don't ask questions like this
 	.lp3:
-	push ebp, ecx
-		virtual at esi
-			.base_low dd ?
-			.base_high dd ?
-			.len_low dd ?
-			.len_high dd ?
-			.type dd ?
-		end virtual
-		jmp memory_map_out_r
-		.back:
-		mov eax, [.type]
+		push ebp, ecx
+			virtual at esi
+				.base_low dd ?
+				.base_high dd ?
+				.len_low dd ?
+				.len_high dd ?
+				.type dd ?
+			end virtual
+			mbp
+			hex_f [.base_high], map_s+4
+			hex_f [.base_low], map_s+12
+			hex_f [.len_high], map_s+26
+			hex_f [.len_low], map_s+34
+			hex_f [.type], map_s+48
+			print map_s, ebp, green
+			inc ebp
+			add esi, 20
+			mov eax, [.type]
+		popr ebp, ecx
+		inc ebp
 		test eax, eax
 		jz .exit
-	popr ebp, ecx
-	inc ebp
 	jmp .lp3
 	.exit:
-end:
+_end:
 	jmp $
-
-memory_map_out_r:
-	virtual at esi
-		.base_low dd ?
-		.base_high dd ?
-		.len_low dd ?
-		.len_high dd ?
-		.type dd ?
-	end virtual
-	mov eax,[.base_high]
-	ccall hex_f, eax, map_s+4
-	mov eax,[.base_low]
-	ccall hex_f, eax, map_s+12
-	mov eax,[.len_high]
-	ccall hex_f, eax, map_s+26
-	mov eax,[.len_low]
-	ccall hex_f, eax, map_s+34
-	mov eax,[.type]
-	ccall hex_f, eax, map_s+48
-	ccall print, map_s, ebp, green
-	inc ebp
-	add esi, 20
-	jmp memory_map_out.back
-
 ; >>>> Data
 	
 string db "hello world",0

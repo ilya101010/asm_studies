@@ -1,4 +1,6 @@
 ; basic procedures for IO and other life stuff
+; registers are used to store arguments (kernel mode)
+; the caller clears regs
 
 format ELF
 
@@ -7,30 +9,18 @@ include 'macro.inc'
 section '.text' executable
 Use32
 
-demo_cdecl: 
-	push ebp
-	mov ebp, esp
-	; [ebp+8] - first arg
-	; [ebp+12] - second arg
-	; ...
-	; [ebp+4*(i+1)] - i-th arg
-	pop ebp
-	ret
-
 ; # output
 public write
 ; write(src, x, y, color) // null-terminated string
+; write: esi -> src, eax -> x, ebx -> y, edx -> color
 write:
-	push ebp
-	mov ebp, esp
-	push esi, edi, eax
-	mov esi, [ebp+8]
-	mov ah, [ebp+20]
-	mov edi, [ebp+16]
+	; esi contains src of string
+	mov edi, ebx
 	imul edi, 160
 	add edi, 0xB8000
-	add edi, [ebp+12]
-	add edi, [ebp+12]
+	add edi, eax
+	add edi, eax
+	mov ah, dl
 	.loop:		     ;цикл вывода сообщения
 	lodsb			    ;считываем очередной символ строки
 	test al, al		    ;если встретили 0
@@ -38,22 +28,17 @@ write:
 	stosw
 	jmp  .loop
 	.exit:
-	pop eax, edi, esi
-	pop ebp
 	ret
 
 public print
 ; print(src,y,color) // null-terminated string
+; print: src -> esi, y -> ebx, color -> edx
 print:
-	push ebp
-	mov ebp, esp
-	pusha
-	mov esi, [ebp+8]
-	mov edi, [ebp+12]
-	mov eax, [ebp+16]
-	ccall write, esi, 0, edi, eax
-	popa
-	pop ebp
+	; esi contains src
+	; ebx contains y
+	; edx contains color
+	mov eax, 0
+	call write
 	ret
 
 public itoa
@@ -195,22 +180,20 @@ public hex_f
 ; a hell of yet another itoa-s
 ; abcdefgh - format idea (8 hex digits)
 ; hex_f(int n, char* s) // hex
+; eax - n, edi - destination
 hex_f:
-	push ebp
-	mov ebp, esp
-	mov edx, [ebp+8]
-	mov edi, [ebp+12]
 	add edi, 7
 	std
 	mbp
-	repeat 8
-		mov eax, edx
+	mov ecx, 8
+	.lp:
+		mov edx, eax
 		and eax, 0xF
 		mov al, [.symbt+eax]
-		shr edx, 4
 		stosb
-	end repeat
+		mov eax, edx
+		shr eax, 4
+	loop .lp
 	cld
-	pop ebp
 	ret
 	.symbt: db '0123456789ABCDEF'
