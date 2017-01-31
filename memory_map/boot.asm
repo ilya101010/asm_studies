@@ -111,6 +111,7 @@ use32               ;32-битный код!!!
 
 public entry_pm
 extrn kernel_setup
+extrn demo
 
 align   10h         ;код должен выравниваться по границе 16 байт
 include 'procedures.inc'
@@ -162,6 +163,7 @@ memory_map_out:
 	jmp .lp3
 	.exit:
 _end:
+	call demo
 	jmp $
 ; >>>> Data
 	

@@ -24,6 +24,7 @@ SECTIONS
 		procedures.o(.text);
 		kernel_setup.o(.text);
 		paging.o(.text);
+		paging.c.o(.text);
 	} > basic_kernel
 
 	/* 0xA000 - start of paging structures */

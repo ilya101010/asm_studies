@@ -31,7 +31,7 @@ write:
 	ret
 
 public print
-; print(src,y,color) // null-terminated string
+; cprint(src,y,color) // null-terminated string
 ; print: src -> esi, y -> ebx, color -> edx
 print:
 	; esi contains src
@@ -39,6 +39,24 @@ print:
 	; edx contains color
 	mov eax, 0
 	call write
+	ret
+
+macro print src, y, color
+{
+	push esi, ebx, edx
+	mov esi, src
+	mov ebx, y
+	mov edx, color
+	call print
+	popr esi, ebx, edx
+}
+
+public cprint
+cprint:
+	push ebp
+	mov ebp, esp
+	print [ebp+8], [ebp+12], [ebp+16]
+	pop ebp
 	ret
 
 public itoa
@@ -164,16 +182,10 @@ itoah:
 	.symb: db '0123456789ABCDEF'
 
 public fill_zeros
-; fill_zeros(char*s, int n)
+; edi -> dst, ecx -> n
 fill_zeros:
-	push ebp
-	mov ebp, esp
-	mov edi, [ebp+8]
 	mov al, 0
-	xor ecx, ecx
-	mov cx, [ebp+12]
 	rep stosb
-	pop ebp
 	ret
 
 public hex_f

@@ -26,8 +26,8 @@ macro set_entry dst, src, flags
 init_paging:
 	mbp
 .clean:
-	ccall fill_zeros, PD, 0x1000
-	ccall fill_zeros, PT, 2*0x1000
+	fill_zeros PD, 0x1000
+	fill_zeros PT, 2*0x1000
 .pd_set:
 	mov edi, PD
 	mov ecx, 1024
@@ -60,7 +60,7 @@ init_paging:
 
 	mbp
 
-	ccall print, paging, 2, 0x0a
+	print paging, 2, 0x0a
 
 	jmp $
 

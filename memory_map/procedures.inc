@@ -26,6 +26,16 @@ macro print src, y, color
 extrn itoa
 extrn itoah
 extrn fill_zeros
+macro fill_zeros dst, n
+{
+	push edi, ecx
+	mov edi, dst
+	mov ecx, n
+	pushad
+		call fill_zeros
+	popad
+	popr edi, ecx
+}
 
 extrn hex_f
 macro hex_f n, dst
@@ -33,6 +43,8 @@ macro hex_f n, dst
 	push eax, edi
 	mov eax, n
 	mov edi, dst
-	call hex_f
+	pushad
+		call hex_f
+	popad
 	popr eax, edi
 }
