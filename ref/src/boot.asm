@@ -1,6 +1,6 @@
 format ELF
 
-include 'macro.inc'
+include 'inc/macro.inc'
 
 ; >>>> 16bit code
 
@@ -113,7 +113,7 @@ public entry_pm
 extrn demo
 
 align   10h         ;код должен выравниваться по границе 16 байт
-include 'procedures.inc'
+include 'inc/procedures.inc'
 entry_pm:
 	; >>> setting up all the basic stuff
 	cli		     ; disabling interrupts

@@ -8,7 +8,7 @@
 
 format ELF
 
-include 'macro.inc'
+include 'inc/macro.inc'
 
 section '.text' executable
 Use32
