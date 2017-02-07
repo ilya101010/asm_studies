@@ -23,6 +23,6 @@ SECTIONS
 	{
 		procedures.o(.text);
 		paging.o(.text);
-		paging.c.o(.text);
+		kernel.o(.text);
 	} > basic_kernel
 }
