@@ -53,7 +53,7 @@ memory_map:
 	xor bp, bp
 	mov edx, 534D4150h
 	mov eax, 0xe820
-	mov edi, 0xA000-20
+	mov edi, 0xF000-20
 	.lp:
 		add edi, 20
 		mov ecx, 20
@@ -110,7 +110,7 @@ section '.text32' executable align 100h
 use32               ;32-битный код!!!
 
 public entry_pm
-extrn demo
+extrn kernel_start
 
 align   10h         ;код должен выравниваться по границе 16 байт
 include 'inc/procedures.inc'
@@ -126,7 +126,7 @@ entry_pm:
 	mov ax, sel_data
 	mov ds, ax
 	mov es, ax
-	call demo
+	call kernel_start
 	jmp $
 ; >>>> Data
 	
