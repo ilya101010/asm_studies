@@ -1,15 +1,17 @@
 #include <stdint.h>
 #include <stack.h>
 
+#define STACK_MAX_SIZE 20
+
 static uint32_t stack(stackop operation, uint32_t arg)
 {
-	static uint32_t list[20] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	static uint32_t list[STACK_MAX_SIZE] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
 	static unsigned char i = 0;
 	uint32_t* tmp;
 	switch(operation)
 	{
 		case PUSH:
-			if(i == 20) return 0;
+			if(i == STACK_MAX_SIZE) return 0;
 			list[i] = arg;
 			i++;
 			return arg;
