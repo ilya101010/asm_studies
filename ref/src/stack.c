@@ -9,6 +9,7 @@ static uint32_t stack(stackop operation, uint32_t arg)
 	switch(operation)
 	{
 		case PUSH:
+			if(i == 20) return 0;
 			list[i] = arg;
 			i++;
 			return arg;

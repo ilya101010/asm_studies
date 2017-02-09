@@ -13,6 +13,7 @@
 #define pg_R 2
 #define pg_U 4
 
+#pragma pack(push, 1)
 typedef struct mmap_entry
 {
 	int base_low;
@@ -21,6 +22,7 @@ typedef struct mmap_entry
 	int length_high;
 	int type;
 } mmap_entry;
+#pragma pack(pop)
 
 void* init_PD(); // returns PD address
 void get_available_memory();
