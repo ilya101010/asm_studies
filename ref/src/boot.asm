@@ -96,8 +96,8 @@ d_zero:		db  0,0,0,0,0,0,0,0
 d_code32:	db  0ffh,0ffh,0,0,0,10011010b,11001111b,0
 ; data
 d_data:		db	0ffh, 0ffh, 0x00, 0, 0, 10010010b, 11001111b, 0x00
-
 GDTSize     =   $-GDTTable
+times 5 db 0,0,0,0,0,0,0,0 
 
 GDTR:               ;загружаемое значение регистра GDTR
 g_size:     dw  GDTSize-1   ;размер таблицы GDT
@@ -129,6 +129,17 @@ entry_pm:
 	call kernel_start
 	jmp $
 ; >>>> Data
+
+public getGDTR
+getGDTR:
+	mov eax, GDTR
+	ret
+
+public setGDTR
+setGDTR:
+	lgdt fword [GDTR]
+	ret
+
 	
 string db "hello world",0
 map_s db "A : 0000000000000000, L = 0000000000000000, T = 00000000",0

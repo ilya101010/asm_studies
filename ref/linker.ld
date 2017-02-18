@@ -21,11 +21,12 @@ SECTIONS
 
 	.bkernel :
 	{
-		procedures.o(.text);
-		tty.o(.text);
-		stack.o(.text);
-		paging.o(.text);
-		kernel.o(.text);
-		paging.c.o(.text);
+		procedures.kernel.o(.text);
+		tty.kernel.o(.text);
+		stack.kernel.o(.text);
+		paging.kernel.o(.text);
+		main.kernel.o(.text);
+		paging.c.kernel.o(.text);
+		gdt.kernel.o(.text);
 	} > basic_kernel
 }
