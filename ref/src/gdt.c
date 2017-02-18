@@ -57,3 +57,8 @@ void gdt_flush(int num)
 	gdtp->size = num*8;
 	setGDTR();
 }
+
+void gdt_setup()
+{
+
+}

@@ -2,8 +2,8 @@
 #include <stack.h>
 #include <stddef.h>
 #include <vga.h>
+#include <memory.h>
 
-extern void fill_zeros(void* dst, size_t size);
 extern void hex_f(int n, char *s);
 extern void enable_paging(void* dst);
 
@@ -48,7 +48,7 @@ size_t map_available_memory() // takes from stack
 {
 	size_t memsize = 0;
 
-	fill_zeros(PD+0x1000,0x1000*1024);
+	memset(PD+0x1000,0,0x1000*1024);
 
 	volatile int* e = (volatile int*)(PD+0x1000);
 

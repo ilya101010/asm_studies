@@ -23,6 +23,7 @@ SECTIONS
 	{
 		main.kernel.o(.text);
 		procedures.kernel.o(.text);
+		memory.kernel.o(.text);
 		tty.kernel.o(.text);
 		stack.kernel.o(.text);
 		paging.kernel.o(.text);

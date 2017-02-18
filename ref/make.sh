@@ -8,6 +8,7 @@ fasm src/procedures.asm obj/procedures.kernel.o
 fasm src/paging.asm obj/paging.kernel.o
 echo ">>> gcc"
 gcc -m32 -o0 -c src/kernel.c -o obj/main.kernel.o -Iinclude -ffreestanding -nostdlib -lgcc -w
+gcc -m32 -o0 -c src/memory.c -o obj/memory.kernel.o -Iinclude -ffreestanding -nostdlib -lgcc -w
 gcc -m32 -o0 -c src/tty.c -o obj/tty.kernel.o -Iinclude -ffreestanding -nostdlib -lgcc -w
 gcc -m32 -o0 -c src/stack.c -o obj/stack.kernel.o -Iinclude -ffreestanding -nostdlib -lgcc -w
 gcc -m32 -o0 -c src/paging.c -o obj/paging.c.kernel.o -Iinclude -ffreestanding -nostdlib -lgcc -w
