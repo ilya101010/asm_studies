@@ -128,7 +128,8 @@ entry_pm:
 	mov es, ax
 	call kernel_start
 	jmp $
-; >>>> Data
+
+; >>>> Descriptor stuff
 
 public getGDTR
 getGDTR:
@@ -140,7 +141,17 @@ setGDTR:
 	lgdt fword [GDTR]
 	ret
 
-	
+public setTR
+setTR: ;(uint16_t segment)
+	push ebp
+	mov ebp, esp
+	push eax
+	mov eax, [ebp+8]
+	ltr ax
+	pop eax
+	pop ebp
+	ret
+
 string db "hello world",0
 map_s db "A : 0000000000000000, L = 0000000000000000, T = 00000000",0
 addr: times 20 db 0

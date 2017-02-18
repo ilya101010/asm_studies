@@ -7,6 +7,7 @@
 #include <stack.h>
 #include <paging.h>
 #include <gdt.h>
+#include <tss.h>
 
 #define p_entry(addr, f) (addr << 12) | f
 
@@ -53,10 +54,13 @@ void kernel_start()
 	tty_print(strs[3]);
 	hex_f(memory_size, strs[4]+23);
 	tty_print(strs[4]);
+	setup_tss();
+	/*
 	initGDTR();
 	gdt_set_gate(3,0xB8000,0x2a,0x92,0x40);
 	//initGDTR();
 	gdt_flush(8);
+	*/
 }
 
 size_t p_init()

@@ -12,6 +12,7 @@ gcc -m32 -o0 -c src/tty.c -o obj/tty.kernel.o -Iinclude -ffreestanding -nostdlib
 gcc -m32 -o0 -c src/stack.c -o obj/stack.kernel.o -Iinclude -ffreestanding -nostdlib -lgcc -w
 gcc -m32 -o0 -c src/paging.c -o obj/paging.c.kernel.o -Iinclude -ffreestanding -nostdlib -lgcc -w
 gcc -m32 -o0 -c src/gdt.c -o obj/gdt.kernel.o -Iinclude -ffreestanding -nostdlib -lgcc -w
+gcc -m32 -o0 -c src/tss.c -o obj/tss.kernel.o -Iinclude -ffreestanding -nostdlib -lgcc -w
 echo ">>> linking"
 $(cp linker.ld obj; cd obj; ld -T linker.ld -melf_i386)
 if [ -f obj/final.img ]; then
