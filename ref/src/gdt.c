@@ -11,15 +11,6 @@ struct GDTP
 
 static struct GDTP* gdtp;
 
-typedef struct gdt_entry
-{
-	unsigned short limit_low;
-	unsigned short base_low;
-	unsigned char base_middle;
-	unsigned char access;
-	unsigned char granularity;
-	unsigned char base_high;
-} gdt_entry __attribute__((packed));
 
 void initGDTR()
 {
@@ -56,9 +47,4 @@ void gdt_flush(int num)
 {
 	gdtp->size = num*8;
 	setGDTR();
-}
-
-void gdt_setup()
-{
-
 }

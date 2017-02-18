@@ -32,9 +32,9 @@ typedef struct tss_entry {
 	uint32_t	ldt;
 	uint16_t	trap;
 	uint16_t	iomap_base;
-} __attribute__ ((packed)) tss_entry_t;
+} __attribute__ ((packed)) tss_entry;
 
-void setup_tss();
-void tss_init();
+void setup_tss(uint32_t num, uint16_t ss0, uint32_t esp0);
+void enable_tss(uint32_t num);
 
 #endif

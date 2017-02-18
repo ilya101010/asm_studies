@@ -1,33 +1,34 @@
 #include <tss.h>
 #include <gdt.h>
 #include <stddef.h>
+#include <stdint.h>
 #include <debug.h>
-
+#include <memory.h>
 
 #define MAIN_TSS 0
 #define SS0 0x10
 #define ESP0 0
 
-static tss_entry TSS[2];
+static tss_entry TSS[10];
 
-extern void fill_zeros(void* dst, size_t size);
 extern void setTR(uint16_t segment);
 
-void setup_tss()
+void setup_tss(uint32_t num, uint16_t ss0, uint32_t esp0)
 {
 	// GDT setup
-	initGDTR();
-	gdt_set_gate(TSS_SEG,&TSS[MAIN_TSS],sizeof(tss_entry), 0xE9, 0x40);
-	gdt_flush(TSS_SEG+1);
+	gdt_set_gate(num,&TSS[num],sizeof(tss_entry), 0xE9, 0x40);
 	mbp;
 	// Managing TSS
-	fill_zeros(&TSS[MAIN_TSS],sizeof(tss_entry));
-	TSS[MAIN_TSS].ss0 = SS0;
-	TSS[MAIN_TSS].cs = 0x8;
-	TSS[MAIN_TSS].es = 0x10;
-	TSS[MAIN_TSS].fs = 0x10;
-	TSS[MAIN_TSS].gs = 0x10;
-	TSS[MAIN_TSS].iomap_base = 0;
-	mbp;
-	setTR(SEG(TSS_SEG));
+	memset(&TSS[num],0,sizeof(tss_entry));
+	TSS[num].ss0 = SS0;
+	TSS[num].cs = 0x8;
+	TSS[num].es = 0x10;
+	TSS[num].fs = 0x10;
+	TSS[num].gs = 0x10;
+	TSS[num].iomap_base = 0;
+}
+
+void enable_tss(uint32_t num)
+{
+	setTR(SEG(num));
 }
