@@ -9,10 +9,14 @@
 #include <gdt.h>
 #include <tss.h>
 #include <memtab.h>
+//#include <msr.h>
 
 #define p_entry(addr, f) (addr << 12) | f
 
 void* PD_a;
+
+extern void msr_get(uint32_t num, uint32_t* low, uint32_t *high);
+extern void msr_set(uint32_t num, uint32_t low, uint32_t high);
 
 // Happy the man, and happy he alone
 // He who can call today his own,
@@ -30,33 +34,18 @@ size_t p_init();
 void kernel_start()
 {
 	tty_init();
-	static char* strs[] = {	"\xC9\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCB\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCB\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBB",
-							"\xBA  Type  \xBA  Base address  \xBA     Length     \xBA           ",
-							"\xCC\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCE\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCE\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xB9",
-							"\xC8\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCA\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCA\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xCD\xBC",
-							"Available memory size: 00000000",
+	static char* strs[] = {	"Available memory size: 00000000",
 							"0000000000000000"};
-	for(int i = 0; i<3; i++)
-		tty_print(strs[i]);
 	
+	tty_print("HELLO WORLD");
 	size_t memory_size = p_init();
-
-	mmap_entry *region;
-	for(int i = 0; i < stack_size(); i++)
-	{
-		region = stack_get(i);
-		hex_f(region->type,strs[1]+1);
-		hex_f(region->base_high,strs[1]+10);
-		hex_f(region->base_low,strs[1]+18);
-		hex_f(region->length_high,strs[1]+27);
-		hex_f(region->length_low,strs[1]+35);
-		tty_print(strs[1]);
-	}
-	tty_print(strs[3]);
-	hex_f(memory_size, strs[4]+23);
-	tty_print(strs[4]);
-
+	uint32_t l, h;
+	mbp;
 	mem_setup();
+	msr_set(0x174,0x0,SEG(1));
+	msr_set(0x175,0x0,0x7c00);
+	msr_set(0x176,0x0,0xC0000000);
+	enable_tss(5);
 }
 
 size_t p_init()

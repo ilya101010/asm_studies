@@ -11,6 +11,7 @@ org 0x7c00 ; why?! loop problems
 
 public start
 start:
+	mbp
 	cli		     ; disabling interrupts
 	mov     ax, cs	  ; segment registers' init
 	mov     ds, ax
