@@ -29,3 +29,11 @@ msr_set:
 	wrmsr
 	pop ebp
 	ret
+
+public sys_enter
+sys_enter:
+	mov ecx, esp
+	mov edx, .back
+	sysenter
+	.back:
+	ret

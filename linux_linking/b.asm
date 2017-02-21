@@ -1,7 +1,7 @@
 strcpy: ; (char* src, char* dest, int count)
 	push ebp
 	mov ebp, esp
-	push ax, cx
+	push eax, ecx
 	mov cx, [ebp+8]
 	rep movsb
 	pop cx, ax, ebp

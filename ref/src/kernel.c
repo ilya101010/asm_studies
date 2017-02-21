@@ -13,6 +13,8 @@
 
 #define p_entry(addr, f) (addr << 12) | f
 
+extern void sys_enter();
+
 void* PD_a;
 
 extern void msr_get(uint32_t num, uint32_t* low, uint32_t *high);
@@ -40,12 +42,13 @@ void kernel_start()
 	tty_print("HELLO WORLD");
 	size_t memory_size = p_init();
 	uint32_t l, h;
-	mbp;
 	mem_setup();
 	msr_set(0x174,0x0,SEG(1));
 	msr_set(0x175,0x0,0x7c00);
-	msr_set(0x176,0x0,0xC0000000);
+	msr_set(0x176,0x0,0xf000);
 	enable_tss(5);
+	mbp;
+	sys_enter();
 }
 
 size_t p_init()
@@ -54,6 +57,7 @@ size_t p_init()
 	init_PD();
 	size_t res = map_available_memory();
 	map_page(0xB8000,0xB8000,pg_P | pg_U);
+	map_page(0xF000,0x9000,pg_P | pg_U);
 	// TODO: bios
 	init_paging();
 	return res;

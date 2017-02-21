@@ -1,7 +1,8 @@
 MEMORY
 {
 	bootloader : org = 0x7c00, len = 1k
-	basic_kernel : org = 0x8000, len = 28k
+	basic_kernel : org = 0x8000, len = 4k
+	sysenter : org = 0x9000, len = 4k
 }
 
 OUTPUT_FORMAT("binary")
@@ -23,6 +24,7 @@ SECTIONS
 	{
 		main.kernel.o(.text);
 		procedures.kernel.o(.text);
+		msr.kernel.o(.text);
 		memory.kernel.o(.text);
 		memtab.kernel.o(.text);
 		tty.kernel.o(.text);
@@ -32,4 +34,9 @@ SECTIONS
 		gdt.kernel.o(.text);
 		tss.kernel.o(.text);
 	} > basic_kernel
+
+	.sysroutine :
+	{
+		sys_routine.kernel.o
+	} > sysenter
 }

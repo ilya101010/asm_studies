@@ -6,6 +6,8 @@ echo ">>> fasm"
 fasm src/boot.asm obj/boot.o
 fasm src/procedures.asm obj/procedures.kernel.o
 fasm src/paging.asm obj/paging.kernel.o
+fasm src/msr.asm obj/msr.kernel.o
+fasm src/sys_routine.asm obj/sys_routine.kernel.o
 echo ">>> gcc"
 gcc -m32 -o0 -c src/kernel.c -o obj/main.kernel.o -Iinclude -ffreestanding -nostdlib -lgcc -w
 gcc -m32 -o0 -c src/memory.c -o obj/memory.kernel.o -Iinclude -ffreestanding -nostdlib -lgcc -w
