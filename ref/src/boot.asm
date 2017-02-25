@@ -153,8 +153,6 @@ setTR: ;(uint16_t segment)
 	pop ebp
 	ret
 
-string db "hello world",0
-map_s db "A : 0000000000000000, L = 0000000000000000, T = 00000000",0
 addr: times 20 db 0
 ; >>> селекторы дескрипторов (RPL=0, TI=0)
 sel_zero    =   0000000b
