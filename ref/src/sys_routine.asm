@@ -1,6 +1,9 @@
 format elf
 
 section '.text' executable
+=======
+format binary
+use32
 
 use32
 

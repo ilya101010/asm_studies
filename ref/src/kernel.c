@@ -43,7 +43,6 @@ void kernel_start()
 	msr_set(0x174,0x0,SEG(1));
 	msr_set(0x175,0x0,0x7c00);
 	msr_set(0x176,0x0,0xf000);
-	//tty_print(out);
 	enable_tss(5);
 	char* out = "sys_write demo";
 	mbp;
