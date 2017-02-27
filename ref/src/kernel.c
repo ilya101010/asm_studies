@@ -14,6 +14,7 @@
 #define p_entry(addr, f) (addr << 12) | f
 
 extern void sys_enter();
+extern void sys_write(char* src);
 
 void* PD_a;
 
@@ -42,11 +43,12 @@ void kernel_start()
 	msr_set(0x174,0x0,SEG(1));
 	msr_set(0x175,0x0,0x7c00);
 	msr_set(0x176,0x0,0xf000);
-	static const char* out = "Kernel loaded";
-	tty_print(out);
+	//tty_print(out);
 	enable_tss(5);
+	char* out = "sys_write demo";
 	mbp;
-	sys_enter();
+	sys_write(out);
+	sys_write(out);
 }
 
 size_t p_init()
@@ -55,7 +57,7 @@ size_t p_init()
 	init_PD();
 	size_t res = map_available_memory();
 	map_page(0xB8000,0xB8000,pg_P | pg_U);
-	map_page(0xF000,0x9400,pg_P | pg_U);
+	map_page(0xF000,0xA000,pg_P | pg_U);
 	// TODO: bios
 	init_paging();
 	return res;

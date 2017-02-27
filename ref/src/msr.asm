@@ -2,6 +2,8 @@ format ELF
 
 section '.text' executable
 
+include 'inc/macro.inc'
+
 ; TODO: cpuid check
 
 public msr_get ; void msr_get(uint32_t num, uint32_t* high, uint32_t *low)
@@ -28,12 +30,4 @@ msr_set:
 	mov edx, [ebp+12]
 	wrmsr
 	pop ebp
-	ret
-
-public sys_enter
-sys_enter:
-	mov ecx, esp
-	mov edx, .back
-	sysenter
-	.back:
 	ret
