@@ -1,6 +1,5 @@
-format ELF
-
-section '.text' executable
+format binary
+use32
 
 macro SC addr
 {
@@ -12,7 +11,7 @@ SYSCALL_NUMBER = 0
 sys_routine:
 	cmp eax, SYSCALL_NUMBER
 	jg .end
-	jmp dword [syscalls+eax*4]
+	call dword [syscalls+eax*4]
 	.end:
 	sysexit
 

@@ -5,9 +5,9 @@
 
 static uint32_t stack(stackop operation, uint32_t arg)
 {
-	static uint32_t list[STACK_MAX_SIZE] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
-	static unsigned char i = 0;
-	uint32_t* tmp;
+	volatile static uint32_t list[STACK_MAX_SIZE] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	volatile static unsigned char i = 0;
+	volatile static uint32_t* tmp;
 	switch(operation)
 	{
 		case PUSH:

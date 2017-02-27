@@ -21,12 +21,12 @@ gcc -m32 -o0 -c src/gdt.c -o obj/gdt.o -Iinclude -ffreestanding -nostdlib -lgcc 
 gcc -m32 -o0 -c src/tss.c -o obj/tss.o -Iinclude -ffreestanding -nostdlib -lgcc -w
 echo ">>> linking boot & init"
 $(cp linker.ld obj; cd obj; ld -T linker.ld -melf_i386 *.o)
+printf "${CYAN}>> SYS_ROUTINE <<${NC}\n"
+mkdir obj/sysr
+fasm src/sys_routine.asm obj/sysr/sys_routine.bin # flat binary _now_
+cat obj/sysr/sys_routine.bin >> obj/final.img
 if [ -f obj/final.img ]; then
 	mv obj/final.img .
 fi
-printf "${CYAN}>> SYS_ROUTINE <<${NC}\n"
-mkdir obj/sysr
-fasm src/sys_routine.asm obj/sysr/sys_routine.o
-
-echo ">>> boot.img size"
+echo ">>> final.img size"
 wc -c final.img

@@ -42,7 +42,7 @@ void kernel_start()
 	msr_set(0x174,0x0,SEG(1));
 	msr_set(0x175,0x0,0x7c00);
 	msr_set(0x176,0x0,0xf000);
-	static const char* out = "Kernel loaded";
+	char out[] = "Kernel loaded";
 	tty_print(out);
 	enable_tss(5);
 	mbp;
@@ -55,7 +55,7 @@ size_t p_init()
 	init_PD();
 	size_t res = map_available_memory();
 	map_page(0xB8000,0xB8000,pg_P | pg_U);
-	map_page(0xF000,0x9400,pg_P | pg_U);
+	map_page(0xF000,0xA000,pg_P | pg_U);
 	// TODO: bios
 	init_paging();
 	return res;
