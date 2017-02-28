@@ -34,6 +34,8 @@ extern void msr_set(uint32_t num, uint32_t low, uint32_t high);
 
 size_t p_init();
 
+#define SYSR_LADDR 0xC0000000
+
 void kernel_start()
 {
 	tty_init();
@@ -42,7 +44,7 @@ void kernel_start()
 	mem_setup();
 	msr_set(0x174,0x0,SEG(1));
 	msr_set(0x175,0x0,0x7c00);
-	msr_set(0x176,0x0,0xf000);
+	msr_set(0x176,0x0,0xC0000000);
 	enable_tss(5);
 	char* out = "sys_write demo";
 	mbp;
@@ -56,7 +58,7 @@ size_t p_init()
 	init_PD();
 	size_t res = map_available_memory();
 	map_page(0xB8000,0xB8000,pg_P | pg_U);
-	map_page(0xF000,0xA000,pg_P | pg_U);
+	map_page(SYSR_LADDR,0xA000,pg_P | pg_U);
 	// TODO: bios
 	init_paging();
 	return res;
